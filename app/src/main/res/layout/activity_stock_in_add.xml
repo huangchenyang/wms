@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".StockInAddActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@color/bg_main">
+
+        <TextView
+            android:id="@+id/tv_header_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text=""
+            android:textColor="@color/headerTextColor"
+            android:textSize="16sp" />
+
+        <LinearLayout
+            android:id="@+id/ll_header_back"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="25dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="16dp"
+                android:src="@mipmap/icon_back" />
+
+            <TextView
+                android:id="@+id/tv_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Back"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Spinner
+                android:id="@+id/sp_work_cell"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="7"
+                android:background="@drawable/bg_edit"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:prompt="@string/spinner_workcell_prompt"
+                android:visibility="gone" />
+
+            <CheckBox
+                android:id="@+id/cb_rma"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:layout_weight="3"
+                android:text="RMA"
+                android:visibility="gone" />
+
+            <CheckBox
+                android:id="@+id/cb_batch_no"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:layout_weight="3"
+                android:text="BatchNo"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <Spinner
+            android:id="@+id/sp_type"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="5dp"
+            android:prompt="@string/spinner_type_prompt"
+            android:visibility="gone" />
+
+        <Spinner
+            android:id="@+id/sp_forward"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="5dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:prompt="@string/spinner_forward_prompt"
+            android:visibility="gone" />
+
+        <com.feiruirobots.jabil.p1.ui.ExtendedEditText
+            android:id="@+id/et_reference_id"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/bg_edit"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:hint="Reference ID"
+            android:paddingLeft="10dp"
+            android:visibility="gone" />
+
+        <com.feiruirobots.jabil.p1.ui.ExtendedEditText
+            android:id="@+id/et_fgtf"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/bg_edit"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:hint="FGTF/PRF/IBD"
+            android:paddingLeft="10dp"
+            android:visibility="gone" />
+
+
+        <com.feiruirobots.jabil.p1.ui.ExtendedEditText
+            android:id="@+id/et_part_no"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/bg_edit"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:hint="Part No"
+            android:paddingLeft="10dp"
+            android:visibility="gone" />
+
+
+        <com.feiruirobots.jabil.p1.ui.ExtendedEditText
+            android:id="@+id/et_qty"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/bg_edit"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:hint="Qty"
+            android:paddingLeft="10dp"
+            android:visibility="gone" />
+
+        <com.feiruirobots.jabil.p1.ui.ExtendedEditText
+            android:id="@+id/et_box_id"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/bg_edit"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:hint="Box ID"
+            android:paddingLeft="10dp"
+            android:visibility="gone" />
+
+        <com.feiruirobots.jabil.p1.ui.ExtendedEditText
+            android:id="@+id/et_rma"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/bg_edit"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:hint="RMA"
+            android:paddingLeft="10dp"
+            android:visibility="gone" />
+
+        <com.feiruirobots.jabil.p1.ui.ExtendedEditText
+            android:id="@+id/et_grn"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/bg_edit"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:hint="GRN"
+            android:paddingLeft="10dp"
+            android:visibility="gone" />
+
+        <com.feiruirobots.jabil.p1.ui.ExtendedEditText
+            android:id="@+id/et_esr"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/bg_edit"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:hint="ESR"
+            android:paddingLeft="10dp"
+            android:visibility="gone" />
+
+        <com.feiruirobots.jabil.p1.ui.ExtendedEditText
+            android:id="@+id/et_carton_count"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/bg_edit"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:hint="Carton Count"
+            android:paddingLeft="10dp"
+            android:visibility="gone" />
+
+        <com.feiruirobots.jabil.p1.ui.ExtendedEditText
+            android:id="@+id/et_batch_no"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/bg_edit"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:hint="Batch No"
+            android:paddingLeft="10dp"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/btn_add_box"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="add"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="10dp"
+        android:gravity="center_vertical">
+
+        <CheckBox
+            android:id="@+id/cb_special_pallet"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:background="@drawable/bg_edit"
+            android:text="1st" />
+
+        <com.feiruirobots.jabil.p1.ui.ExtendedEditText
+            android:id="@+id/et_terminal"
+            android:layout_width="200dp"
+            android:layout_height="40dp"
+            android:layout_toRightOf="@+id/cb_special_pallet"
+            android:background="@drawable/bg_edit"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:hint="FMR Terminal"
+            android:paddingLeft="10dp" />
+
+        <Button
+            android:id="@+id/btn_add_pallet"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:text="add"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/tv_box_count"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="5dp"
+            android:textAlignment="gravity"
+            android:textColor="@color/black"
+            android:textSize="12pt" />
+    </RelativeLayout>
+
+    <ListView
+        android:id="@+id/lv_carton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"></ListView>
+</LinearLayout>

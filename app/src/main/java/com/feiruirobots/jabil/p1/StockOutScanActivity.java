@@ -1,0 +1,352 @@
+package com.feiruirobots.jabil.p1;
+
+import android.app.AlertDialog;
+import android.content.Intent;
+import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.feiruirobots.jabil.p1.adapter.MyListAdapter;
+import com.feiruirobots.jabil.p1.common.TTSUtil;
+import com.feiruirobots.jabil.p1.common.ToastUtil;
+import com.feiruirobots.jabil.p1.http.CallServer;
+import com.feiruirobots.jabil.p1.http.HttpResponse;
+import com.feiruirobots.jabil.p1.model.Carton;
+import com.feiruirobots.jabil.p1.model.FUNCTION;
+import com.feiruirobots.jabil.p1.ui.ExtendedEditText;
+import com.yanzhenjie.nohttp.RequestMethod;
+import com.yanzhenjie.nohttp.rest.OnResponseListener;
+import com.yanzhenjie.nohttp.rest.StringRequest;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import cn.hutool.core.collection.ListUtil;
+import cn.hutool.core.util.StrUtil;
+
+public class StockOutScanActivity extends BaseActivity {
+    private String function;
+    private String bizTaskId;
+    @BindView(R.id.et_scan_text)
+    ExtendedEditText et_scan_text;
+
+    @BindView(R.id.et_back_terminal)
+    ExtendedEditText et_back_terminal;
+    @BindView(R.id.lv_scan_out)
+    ListView lv_scan_out;
+    @BindView(R.id.lv_all)
+    ListView lv_all;
+    private MyListAdapter<CartonView, Carton> outAdapter;
+    private MyListAdapter<CartonView, Carton> allAdapter;
+    private List<Carton> outList = new ArrayList<>();
+    private List<Carton> allList = new ArrayList<>();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_stock_out_scan);
+        ButterKnife.bind(this);
+        Intent intent = this.getIntent();
+        function = intent.getStringExtra("FUNCTION");
+        bizTaskId = intent.getStringExtra("BizTaskId");
+        et_scan_text.addTextChangedListener(new JumpTextWatcher(et_scan_text, null));
+        et_back_terminal.addTextChangedListener(new JumpTextWatcher(et_back_terminal, null));
+        et_scan_text.setVisibility(View.VISIBLE);
+        initTitle(Objects.requireNonNull(FUNCTION.of(function)).msg + " Out");
+        getOutScan(null);
+        ScanOutListView();
+        AllListView();
+        getAll();
+    }
+
+    class CartonView {
+        TextView tv_t1, tv_t2, tv_t3, tv_qty, tv_finish;
+    }
+
+    private void ScanOutListView() {
+        if (outAdapter == null) {
+            outAdapter = new MyListAdapter<CartonView, Carton>(StockOutScanActivity.this, outList, R.layout.item_carton) {
+                @Override
+                public CartonView initView(View convertView, CartonView holder) {
+                    if (holder == null) holder = new CartonView();
+                    holder.tv_t3 = convertView.findViewById(R.id.tv_t3);
+                    holder.tv_t2 = convertView.findViewById(R.id.tv_t2);
+                    holder.tv_t1 = convertView.findViewById(R.id.tv_t1);
+                    holder.tv_qty = convertView.findViewById(R.id.tv_qty);
+                    holder.tv_finish = convertView.findViewById(R.id.tv_finish);
+                    if (StrUtil.equals(function, FUNCTION.FINISHED_GOODS.value) || StrUtil.equals(function, FUNCTION.SEMI_FG.value)) {
+                        holder.tv_t1.setVisibility(View.VISIBLE);
+                        holder.tv_t2.setVisibility(View.VISIBLE);
+                        holder.tv_qty.setVisibility(View.VISIBLE);
+                    }
+                    if (StrUtil.equals(function, FUNCTION.RAW_MATERIAL.value)) {
+                        holder.tv_qty.setVisibility(View.VISIBLE);
+                    }
+                    if (StrUtil.equals(function, FUNCTION.RTV_RTC.value)) {
+                        holder.tv_t1.setVisibility(View.VISIBLE);
+                    }
+                    if (StrUtil.equals(function, FUNCTION.STAGING.value)) {
+                        holder.tv_t1.setVisibility(View.VISIBLE);
+                        holder.tv_t2.setVisibility(View.GONE);
+                        holder.tv_qty.setVisibility(View.GONE);
+                    }
+                    return holder;
+                }
+
+                @Override
+                public void initContent(CartonView holder, Carton data) {
+                    if (StrUtil.equals(function, FUNCTION.FINISHED_GOODS.value) || StrUtil.equals(function, FUNCTION.SEMI_FG.value)) {
+                        holder.tv_t1.setText("BoxID:" + data.getBoxId());
+                        holder.tv_t2.setText("PN:" + data.getPartNo());
+                        holder.tv_qty.setText("Q:" + data.getQty());
+                        if (data.getStatus() == 0)
+                            holder.tv_finish.setVisibility(View.GONE);
+                        else
+                            holder.tv_finish.setVisibility(View.VISIBLE);
+                    }
+                    if (StrUtil.equals(function, FUNCTION.RAW_MATERIAL.value)) {
+                        holder.tv_t1.setText(String.valueOf(data.getReferenceId()));
+                        holder.tv_qty.setText(String.valueOf(data.getQty()));
+                        if (data.getStatus() == 0)
+                            holder.tv_finish.setVisibility(View.GONE);
+                        else
+                            holder.tv_finish.setVisibility(View.VISIBLE);
+                    }
+                    if (StrUtil.equals(function, FUNCTION.RTV_RTC.value)) {
+                        holder.tv_t1.setText("ESR:" + data.getEsr());
+                        holder.tv_qty.setText("Q:" + data.getQty());
+                        if (data.getStatus() == 0)
+                            holder.tv_finish.setVisibility(View.GONE);
+                        else
+                            holder.tv_finish.setVisibility(View.VISIBLE);
+                    }
+                    if (StrUtil.equals(function, FUNCTION.STAGING.value)) {
+                        holder.tv_t1.setText("ESR:" + data.getEsr());
+                        holder.tv_qty.setText("Q:" + data.getQty());
+                        if (data.getStatus() == 0)
+                            holder.tv_finish.setVisibility(View.GONE);
+                        else
+                            holder.tv_finish.setVisibility(View.VISIBLE);
+                    }
+                }
+            };
+            lv_scan_out.setAdapter(outAdapter);
+        }
+        outAdapter.setDataList(outList);
+        outAdapter.notifyDataSetChanged();
+    }
+
+    private void AllListView() {
+        if (allAdapter == null) {
+            allAdapter = new MyListAdapter<CartonView, Carton>(StockOutScanActivity.this, allList, R.layout.item_carton) {
+                @Override
+                public CartonView initView(View convertView, CartonView holder) {
+                    if (holder == null) holder = new CartonView();
+                    holder.tv_t3 = convertView.findViewById(R.id.tv_t3);
+                    holder.tv_t2 = convertView.findViewById(R.id.tv_t2);
+                    holder.tv_t1 = convertView.findViewById(R.id.tv_t1);
+                    holder.tv_qty = convertView.findViewById(R.id.tv_qty);
+                    holder.tv_finish = convertView.findViewById(R.id.tv_finish);
+                    if (StrUtil.equals(function, FUNCTION.FINISHED_GOODS.value) || StrUtil.equals(function, FUNCTION.SEMI_FG.value)) {
+                        holder.tv_t1.setVisibility(View.VISIBLE);
+                        holder.tv_t2.setVisibility(View.VISIBLE);
+                        holder.tv_qty.setVisibility(View.VISIBLE);
+                    }
+                    if (StrUtil.equals(function, FUNCTION.RAW_MATERIAL.value)) {
+                        holder.tv_t1.setVisibility(View.VISIBLE);
+                        holder.tv_qty.setVisibility(View.VISIBLE);
+                    }
+                    if (StrUtil.equals(function, FUNCTION.RTV_RTC.value)) {
+                        holder.tv_t1.setVisibility(View.VISIBLE);
+                        holder.tv_t2.setVisibility(View.GONE);
+                        holder.tv_qty.setVisibility(View.VISIBLE);
+                    }
+                    if (StrUtil.equals(function, FUNCTION.STAGING.value)) {
+                        holder.tv_t1.setVisibility(View.VISIBLE);
+                        holder.tv_t2.setVisibility(View.GONE);
+                        holder.tv_qty.setVisibility(View.VISIBLE);
+                    }
+                    return holder;
+                }
+
+                @Override
+                public void initContent(CartonView holder, Carton data) {
+                    if (StrUtil.equals(function, FUNCTION.FINISHED_GOODS.value) || StrUtil.equals(function, FUNCTION.SEMI_FG.value)) {
+                        holder.tv_t1.setText("PN:" + data.getPartNo());
+                        holder.tv_t2.setText("BoxID:" + data.getBoxId());
+                        holder.tv_qty.setText("Q:" + data.getQty());
+                    }
+                }
+            };
+            lv_all.setAdapter(allAdapter);
+        }
+        allAdapter.setDataList(allList);
+        allAdapter.notifyDataSetChanged();
+    }
+
+    private void getAll() {
+        StringRequest request = new StringRequest(App.getMethod("/retrive/listBox"), RequestMethod.POST);
+        request.add("bizTaskId", bizTaskId);
+        CallServer.getInstance().add(0, request, new HttpResponse(StockOutScanActivity.this) {
+            @Override
+            public void onOK(JSONObject object) {
+                allList.clear();
+                JSONArray arrays = object.getJSONArray("data");
+                for (Object array : arrays) {
+                    JSONObject jsonObject = (JSONObject) array;
+                    Carton carton = Carton.parse(jsonObject);
+                    allList.add(carton);
+                }
+                AllListView();
+            }
+
+            @Override
+            public void onFail(JSONObject object) {
+
+            }
+
+            @Override
+            public void onError() {
+
+            }
+        });
+    }
+
+    private void getOutScan(String code) {
+        StringRequest request = new StringRequest(App.getMethod("/retrive/outScan"), RequestMethod.POST);
+        request.add("bizTaskId", bizTaskId);
+        request.add("code", code);
+        CallServer.getInstance().add(0, request, new HttpResponse(StockOutScanActivity.this) {
+            @Override
+            public void onOK(JSONObject object) {
+                outList.clear();
+                et_scan_text.setText(null);
+                Integer remainScanQty = object.getInteger("remain_scan_qty");//等待扫描的数量
+                Integer remainQty = object.getInteger("remain_qty");//托盘剩余的箱子数量
+                JSONArray arrays = object.getJSONArray("data");
+                for (Object array : arrays) {
+                    JSONObject jsonObject = (JSONObject) array;
+                    Carton carton = Carton.parse(jsonObject);
+                    outList.add(carton);
+                }
+                ScanOutListView();
+                getAll();
+                if (remainQty == 0) {
+                    TTSUtil.speak("Out Finish");
+                    ToastUtil.show(StockOutScanActivity.this, "Out Finish");
+                    et_scan_text.setVisibility(View.GONE);
+                    return;
+                }
+                if (remainScanQty == 0) {
+                    TTSUtil.speak("Pick Finish");
+                    ToastUtil.show(StockOutScanActivity.this, "Pick Finish,Please Back");
+                    et_scan_text.setVisibility(View.GONE);
+                    et_back_terminal.setVisibility(View.VISIBLE);
+                    et_back_terminal.requestFocus();
+                    return;
+                }
+                et_scan_text.setVisibility(View.VISIBLE);
+                TTSUtil.speak("OK");
+            }
+
+            @Override
+            public void onFail(JSONObject object) {
+                TTSUtil.speak("Error");
+                outList.clear();
+                et_scan_text.setText(null);
+                JSONArray arrays = object.getJSONArray("data");
+                for (Object array : arrays) {
+                    JSONObject jsonObject = (JSONObject) array;
+                    Carton carton = Carton.parse(jsonObject);
+                    outList.add(carton);
+                }
+                ScanOutListView();
+                getAll();
+            }
+
+            @Override
+            public void onError() {
+
+            }
+        });
+    }
+
+    private class JumpTextWatcher implements TextWatcher {
+        private EditText editText;
+        private View nextView;
+
+        public JumpTextWatcher(EditText editText, View nextView) {
+            this.editText = editText;
+            if (null != nextView) {
+                this.nextView = nextView;
+            }
+        }
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+            String str = editable.toString();
+            if (str == null || (str.indexOf("\r") == -1 && str.indexOf("\n") == -1)) return;
+            String str2 = str.replace("\r", "").replace("\n", "");
+            if (editText.getId() == R.id.et_scan_text) {
+                if (str2.length() > 5) {
+                    editText.setText(str2);
+                    getOutScan(str2);
+                    et_scan_text.setText(null);
+                    return;
+                }
+                editText.setText(null);
+                ToastUtil.show(StockOutScanActivity.this, "BoxId Input Error");
+            }
+            if (editText.getId() == R.id.et_back_terminal) {
+                if (str2.startsWith("Terminal")) {
+                    editText.setText(str2);
+                    back();
+                    return;
+                }
+                editText.setText(null);
+                ToastUtil.show(StockOutScanActivity.this, "Terminal Input Error");
+            }
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        back();
+    }
+
+    private void back() {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(StockOutScanActivity.this);
+        dialog.setTitle("Alert");//设置对话框的标题
+        dialog.setMessage("confirm back!");//设置对话框的内容
+        dialog.setCancelable(false);//设置对话框是否可以取消
+        //确定按钮的点击事件
+        dialog.setPositiveButton("OK", (dialog12, which) -> StockOutScanActivity.this.finish());
+        //取消按钮的点击事件
+        dialog.setNegativeButton("Cancel", (dialog1, which) -> {
+        });
+        dialog.show();
+    }
+}

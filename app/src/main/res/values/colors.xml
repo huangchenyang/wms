@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="green">#16b777</color>
+    <color name="grey">#d2d2d2</color>
+    <color name="textColor">#FF000000</color>
+    <color name="headerTextColor">#FFFFFFFF</color>
+    <color name="edit_main">#FFFFFFFF</color>
+    <color name="grey2">#fafafa</color>
+    <color name="bg_main">#006E6B</color>
+    <color name="bg_b_z">#006E6B</color>
+    <color name="red">#FF0000</color>
+
+</resources>

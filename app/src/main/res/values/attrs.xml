@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="m_title" format="string"/>
+    <attr name="m_text" format="string"/>
+    <!--WidgetTopBar是自定义控件的类名-->
+    <declare-styleable name="LabelTextView">
+        <attr name="m_title"/>
+        <attr name="m_text"/>
+    </declare-styleable>
+    <declare-styleable name="MyTopBar">
+        <attr name="m_title"/>
+        <attr name="m_left_text" format="string"/>
+        <attr name="m_right_text" format="string"/>
+    </declare-styleable>
+</resources>

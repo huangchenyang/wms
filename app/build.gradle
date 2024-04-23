@@ -1,0 +1,36 @@
+plugins {
+    id 'com.android.application'
+}
+android {
+    namespace 'com.feiruirobots.jabil.p1'
+    compileSdk 30
+
+    defaultConfig {
+        applicationId "com.feiruirobots.jabil.p1"
+        minSdk 25
+        targetSdk 30
+        versionCode 1
+        versionName "1.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation 'com.alibaba:fastjson:1.2.11'
+    implementation 'com.jakewharton:butterknife:10.2.3'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.3'
+    implementation 'com.yanzhenjie.nohttp:nohttp:1.1.11'
+    implementation 'cn.hutool:hutool-all:5.8.26'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+}
