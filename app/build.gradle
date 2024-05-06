@@ -7,7 +7,7 @@ android {
 
     defaultConfig {
         applicationId "com.feiruirobots.jabil.p1"
-        minSdk 25
+        minSdk 26
         targetSdk 30
         versionCode 1
         versionName "1.0"
@@ -33,4 +33,6 @@ dependencies {
     implementation 'cn.hutool:hutool-all:5.8.26'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    implementation 'com.github.bumptech.glide:glide:4.12.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
 }

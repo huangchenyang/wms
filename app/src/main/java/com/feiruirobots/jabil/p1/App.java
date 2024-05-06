@@ -16,8 +16,13 @@ public class App extends Application {
     private HashMap<String, List<String>> hashMap = new HashMap<String, List<String>>();
 
     public static String getMethod(String method) {
-        return StrUtil.format("http://10.121.196.47:11180/jabil/pda{}",method);
+//        return StrUtil.format("http://10.121.196.47:11180/jabil/pda{}",method);
 //        return StrUtil.format("http://192.168.43.241/jabil/pda{}", method);
+        return StrUtil.format("http://8.134.165.24:11180/jabil/pda{}",method);
+    }
+
+    public static String getCodeBarUrl() {
+        return StrUtil.format("http://8.134.165.24:11180");
     }
 
     public static App getInstance() {

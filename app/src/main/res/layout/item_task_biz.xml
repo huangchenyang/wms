@@ -4,48 +4,115 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <RelativeLayout
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/tv_pallet_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="10dp"
+            android:text=""
+            android:textColor="@color/black" />
+
+        <TextView
+            android:id="@+id/tv_fgtf"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="10dp"
+            android:layout_marginTop="5dp"
+            android:text=""
+            android:textColor="@color/black" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/tv_binid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="10dp"
+            android:layout_marginTop="5dp"
+            android:text=""
+            android:textColor="@color/black" />
+
+        <TextView
+            android:id="@+id/tv_box_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="10dp"
+            android:layout_marginTop="5dp"
+            android:text=""
+            android:textColor="@color/black" />
+    </LinearLayout>
+    <TextView
+        android:id="@+id/tv_terminal_in"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="20dp"
+        android:text="2"
+        android:textColor="@color/black" />
 
-        <TextView
-            android:id="@+id/tv_reference_id"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
-            android:text=""
-            android:textColor="@color/black" />
+<!--    <RelativeLayout-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content">-->
+<!--        -->
+<!--        <TextView-->
+<!--            android:id="@+id/tv_pallet_id"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginEnd="10dp"-->
+<!--            android:text=""-->
+<!--            android:textColor="@color/black" />-->
 
-        <TextView
-            android:id="@+id/tv_desc"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/tv_reference_id"
-            android:layout_marginEnd="10dp"
-            android:layout_marginTop="5dp"
-            android:text=""
-            android:textColor="@color/black" />
+<!--        <TextView-->
+<!--            android:id="@+id/tv_fgtf"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_below="@id/tv_pallet_id"-->
+<!--            android:layout_marginEnd="10dp"-->
+<!--            android:layout_marginTop="5dp"-->
+<!--            android:text=""-->
+<!--            android:textColor="@color/black" />-->
 
-        <TextView
-            android:id="@+id/tv_from_to"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/tv_desc"
-            android:layout_marginEnd="10dp"
-            android:layout_marginTop="5dp"
-            android:text=""
-            android:textColor="@color/black" />
+<!--        <TextView-->
+<!--            android:id="@+id/tv_binid"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_below="@id/tv_fgtf"-->
+<!--            android:layout_marginEnd="10dp"-->
+<!--            android:layout_marginTop="5dp"-->
+<!--            android:text=""-->
+<!--            android:textColor="@color/black" />-->
 
-        <TextView
-            android:id="@+id/tv_status"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="20dp"
-            android:text="2"
-            android:textColor="@color/black" />
-    </RelativeLayout>
+<!--        <TextView-->
+<!--            android:id="@+id/tv_box_count"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_below="@id/tv_binid"-->
+<!--            android:layout_marginEnd="10dp"-->
+<!--            android:layout_marginTop="5dp"-->
+<!--            android:text=""-->
+<!--            android:textColor="@color/black" />-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/tv_terminal_in"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_alignParentEnd="true"-->
+<!--            android:layout_centerVertical="true"-->
+<!--            android:layout_marginEnd="20dp"-->
+<!--            android:text="2"-->
+<!--            android:textColor="@color/black" />-->
+<!--    </RelativeLayout>-->
 
     <View
         android:layout_width="match_parent"

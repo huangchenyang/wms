@@ -1,5 +1,8 @@
 package com.feiruirobots.jabil.p1;
 
+import static com.feiruirobots.jabil.p1.StockInActivity.existCartonList;
+import static com.feiruirobots.jabil.p1.StockInActivity.existPallet;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,12 +16,14 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.bumptech.glide.Glide;
 import com.feiruirobots.jabil.p1.adapter.MyListAdapter;
 import com.feiruirobots.jabil.p1.bean.Kv;
 import com.feiruirobots.jabil.p1.common.TTSUtil;
@@ -67,12 +72,16 @@ public class StockInAddActivity extends BaseActivity {
     ListView lv_carton;
     @BindView(R.id.btn_add_box)
     Button btn_add_box;
-    @BindView(R.id.btn_add_pallet)
-    Button btn_add_pallet;
+    @BindView(R.id.btn_cancle_new_pallet)
+    Button btn_cancle_new_pallet;
+    @BindView(R.id.btn_apply_bin)
+    Button btn_apply_bin;
     @BindView(R.id.et_terminal)
-    ExtendedEditText et_terminal;
-    @BindView(R.id.tv_box_count)
-    TextView tv_box_count;
+    EditText et_terminal;
+    @BindView(R.id.tv_binid)
+    TextView tv_binid;
+    @BindView(R.id.img_barcode)
+    ImageView img_barcode;
     @BindView(R.id.et_rma)
     ExtendedEditText et_rma;
     @BindView(R.id.et_carton_count)
@@ -87,10 +96,14 @@ public class StockInAddActivity extends BaseActivity {
     CheckBox cb_batch_no;
     @BindView(R.id.et_batch_no)
     ExtendedEditText et_batch_no;
+    @BindView(R.id.et_terminal_in)
+    ExtendedEditText et_terminal_in;
     private String function;
     private Integer palletId;
     private List<Carton> cartonList = new ArrayList<>();
     private MyListAdapter adapter;
+    private String TAG = "hcy--StockInAddActivity";
+    private String addType = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +113,15 @@ public class StockInAddActivity extends BaseActivity {
         Intent intent = this.getIntent();
         function = intent.getStringExtra("FUNCTION");
         initTitle(Objects.requireNonNull(FUNCTION.of(function)).msg + " In Stock");
+        addType = intent.getStringExtra("AddType");
+        if(addType.equals("New Packet")){
+//            initTitle("New Stock In -> "+ Objects.requireNonNull(FUNCTION.of(function)).msg+"->New Pallet",true);
+        }else if(addType.equals("Exist Packet")){
+//            initTitle("New Stock In -> "+ Objects.requireNonNull(FUNCTION.of(function)).msg+"->Add New BoxID",false);
+            cartonList.clear();
+            palletId = existPallet.getId();
+            cartonList = existCartonList;
+        }
         initView();
         refreshListView();
         initAdapter();
@@ -114,7 +136,7 @@ public class StockInAddActivity extends BaseActivity {
     }
 
     private void initView() {
-        et_terminal.addTextChangedListener(new JumpTextWatcher(et_terminal, btn_add_pallet));
+        et_terminal.addTextChangedListener(new JumpTextWatcher(et_terminal, btn_apply_bin));
         if (StrUtil.equals(function, FUNCTION.FINISHED_GOODS.value)) {
             sp_work_cell.setVisibility(View.VISIBLE);
             cb_rma.setVisibility(View.VISIBLE);
@@ -130,6 +152,37 @@ public class StockInAddActivity extends BaseActivity {
                 et_rma.addTextChangedListener(new JumpTextWatcher(et_rma, btn_add_box));
             } else {
                 et_box_id.addTextChangedListener(new JumpTextWatcher(et_box_id, btn_add_box));
+            }
+            et_terminal_in.addTextChangedListener(new JumpTextWatcher(et_terminal_in, null));
+
+            btn_cancle_new_pallet.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    palletDelete();
+                }
+            });
+
+            btn_apply_bin.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    palletAdd();
+                }
+            });
+
+            if(addType.equals("Exist Packet")){
+                btn_apply_bin.setVisibility(View.GONE);
+                cb_special_pallet.setVisibility(View.GONE);
+                tv_binid.setVisibility(View.VISIBLE);
+                img_barcode.setVisibility(View.VISIBLE);
+                tv_binid.setText(existPallet.getBinId());
+                //显示条行码
+                String imageUrl = App.getCodeBarUrl()+existPallet.getBinBarcodeUrlImg();
+                Log.d(TAG,"imageUrl:"+imageUrl);
+                Glide.with(StockInAddActivity.this)
+                        .load(imageUrl)
+                        .override(1080,1080)
+                        //.thumbnail(0.1f)  // 设置缩略图比例
+                        .into(img_barcode);
             }
         }
         if (StrUtil.equals(function, FUNCTION.SEMI_FG.value)) {
@@ -222,6 +275,7 @@ public class StockInAddActivity extends BaseActivity {
             @Override
             public void onSucceed(int what, Response response) {
                 JSONObject json = JSONObject.parseObject(response.get().toString());
+                Log.d(TAG,"forward onSucceed:"+json.toString());
                 String state = json.getString("state");
                 if (!state.equals("ok")) return;
                 List<String> forwards = StrUtil.split(json.getString("data"), ",");
@@ -233,7 +287,7 @@ public class StockInAddActivity extends BaseActivity {
 
             @Override
             public void onFailed(int what, Response response) {
-
+                Log.d(TAG,"forward onFailed:"+response.toString());
             }
 
             @Override
@@ -262,6 +316,7 @@ public class StockInAddActivity extends BaseActivity {
             @Override
             public void onSucceed(int what, Response response) {
                 JSONObject json = JSONObject.parseObject(response.get().toString());
+                Log.d(TAG,"workCell onSucceed:"+json.toString());
                 String state = json.getString("state");
                 if (!state.equals("ok")) return;
                 List<String> forwards = StrUtil.split(json.getString("data"), ",");
@@ -273,7 +328,7 @@ public class StockInAddActivity extends BaseActivity {
 
             @Override
             public void onFailed(int what, Response response) {
-
+                Log.d(TAG,"workCell onSucceed:"+response.toString());
             }
 
             @Override
@@ -287,8 +342,10 @@ public class StockInAddActivity extends BaseActivity {
         StringRequest request = null;
         if (StrUtil.equals(function, FUNCTION.FINISHED_GOODS.value)) {
             String terminal = et_terminal.getText().toString();
-            if (ObjectUtil.isAllNotEmpty(terminal, palletId)) {
-                request = new StringRequest(App.getMethod("/stockIn/addFinishGoodsSubmit"), RequestMethod.POST);
+//            if (ObjectUtil.isAllNotEmpty(terminal, palletId)) {
+            if (palletId!=null) {
+                request = new StringRequest(App.getMethod("/stockIn/applyBin"), RequestMethod.POST);
+                Log.d(TAG,"palletId:"+palletId);
                 request.add("palletId", palletId);
                 request.add("firstFloor", cb_special_pallet.isChecked() ? 1 : 0);
                 request.set("terminal", et_terminal.getText().toString());
@@ -343,13 +400,107 @@ public class StockInAddActivity extends BaseActivity {
 
             @Override
             public void onOK(JSONObject object) {
+                Log.d(TAG,"palletAdd onOK:"+object.toString());
+                TTSUtil.speak("ok");
+                btn_apply_bin.setVisibility(View.GONE);
+                cb_special_pallet.setVisibility(View.GONE);
+                tv_binid.setVisibility(View.VISIBLE);
+                img_barcode.setVisibility(View.VISIBLE);
+                et_terminal_in.setVisibility(View.VISIBLE);
+                et_terminal_in.requestFocus();
+
+                JSONObject dataObject = object.getJSONObject("data");
+                BizTask bizTask =BizTask.parse(dataObject);
+                tv_binid.setText(bizTask.getBinId());
+                String imageUrl = App.getCodeBarUrl()+bizTask.getBinBarcodeUrlImg();
+                Log.d(TAG,"imageUrl:"+imageUrl);
+                Glide.with(StockInAddActivity.this)
+                        .load(imageUrl)
+                        .override(1080,1080)
+                        //.thumbnail(0.1f)  // 设置缩略图比例
+                        .into(img_barcode);
+//                StockInAddActivity.this.finish();
+            }
+
+            @Override
+            public void onFail(JSONObject object) {
+                Log.d(TAG,"palletAdd onFail:"+object.toString());
+            }
+
+            @Override
+            public void onError() {
+                TTSUtil.speak("error");
+            }
+        });
+    }
+
+    private void palletDelete() {
+        StringRequest request = null;
+        if (StrUtil.equals(function, FUNCTION.FINISHED_GOODS.value)) {
+            String terminal = et_terminal.getText().toString();
+            if (palletId !=null) {
+                request = new StringRequest(App.getMethod("/stockIn/deletePallet"), RequestMethod.POST);
+                Log.d(TAG,"palletId:"+palletId);
+                request.add("palletId", palletId);
+            }
+        }
+//        if (StrUtil.equals(function, FUNCTION.SEMI_FG.value)) {
+//            String terminal = et_terminal.getText().toString();
+//            if (ObjectUtil.isAllNotEmpty(terminal, palletId)) {
+//                request = new StringRequest(App.getMethod("/stockIn/addSemiFGSubmit"), RequestMethod.POST);
+//                request.add("palletId", palletId);
+//                request.add("firstFloor", cb_special_pallet.isChecked() ? 1 : 0);
+//                request.set("terminal", et_terminal.getText().toString());
+//            }
+//        }
+//        if (StrUtil.equals(function, FUNCTION.RAW_MATERIAL.value)) {
+//            String terminal = et_terminal.getText().toString();
+//            if (ObjectUtil.isAllNotEmpty(terminal, palletId)) {
+//                request = new StringRequest(App.getMethod("/stockIn/addRawMaterialSubmit"), RequestMethod.POST);
+//                request.add("palletId", palletId);
+//                request.add("firstFloor", cb_special_pallet.isChecked() ? 1 : 0);
+//                request.set("terminal", et_terminal.getText().toString());
+//            }
+//        }
+//        if (StrUtil.equals(function, FUNCTION.RTV_RTC.value)) {
+//            String terminal = et_terminal.getText().toString();
+//            if (ObjectUtil.isAllNotEmpty(terminal, palletId)) {
+//                request = new StringRequest(App.getMethod("/stockIn/addRtcSubmit"), RequestMethod.POST);
+//                request.add("palletId", palletId);
+//                request.add("firstFloor", cb_special_pallet.isChecked() ? 1 : 0);
+//                request.set("terminal", et_terminal.getText().toString());
+//            }
+//        }
+//        if (StrUtil.equals(function, FUNCTION.STAGING.value)) {
+//            String terminal = et_terminal.getText().toString();
+//            if (ObjectUtil.isAllNotEmpty(terminal, palletId)) {
+//                request = new StringRequest(App.getMethod("/stockIn/addStagingSubmit"), RequestMethod.POST);
+//                request.add("palletId", palletId);
+//                request.add("firstFloor", cb_special_pallet.isChecked() ? 1 : 0);
+//                request.set("terminal", et_terminal.getText().toString());
+//            }
+//        }
+        if (request == null) {
+            ToastUtil.show(this, "Pallet ID is null,Check！");
+            TTSUtil.speak("error");
+            return;
+        }
+        CallServer.getInstance().add(0, request, new HttpResponse(StockInAddActivity.this) {
+            @Override
+            public void onStart(int what) {
+
+            }
+
+            @Override
+            public void onOK(JSONObject object) {
+                Log.d(TAG,"palletDelete onOK:"+object.toString());
                 TTSUtil.speak("ok");
                 StockInAddActivity.this.finish();
             }
 
             @Override
             public void onFail(JSONObject object) {
-
+                Log.d(TAG,"palletDelete onFail:"+object.toString());
             }
 
             @Override
@@ -434,7 +585,7 @@ public class StockInAddActivity extends BaseActivity {
                 dialog.setCancelable(false);//设置对话框是否可以取消
                 //确定按钮的点击事件
                 dialog.setPositiveButton("OK", (dialog12, which) -> {
-                    StringRequest request = new StringRequest(App.getMethod("/stockIn/delete"), RequestMethod.POST);
+                    StringRequest request = new StringRequest(App.getMethod("/stockIn/deleteBox"), RequestMethod.POST);
                     request.add("id", cartonList.get(position).getId());
                     request.add("palletId", palletId);
                     CallServer.getInstance().add(0, request, new HttpResponse(StockInAddActivity.this) {
@@ -445,12 +596,18 @@ public class StockInAddActivity extends BaseActivity {
 
                         @Override
                         public void onOK(JSONObject object) {
-                            cartonList.clear();
+                            Log.d(TAG,"deleteBox onOK:"+object.toString());
+//                            if(addType.equals("New Packet")){
+//                                cartonList.clear();
+//                            }
                             JSONArray jsonArray = object.getJSONArray("data");
                             for (Object o : jsonArray) {
                                 JSONObject jsonObject = (JSONObject) o;
                                 Carton carton = Carton.parse(jsonObject);
+                                palletId = carton.getPalletId();
+                                Log.d(TAG,"palletId");
                                 if (palletId == null) {
+                                    Log.d(TAG,"palletId == null");
                                     palletId = carton.getPalletId();
                                 }
                                 cartonList.add(carton);
@@ -461,7 +618,7 @@ public class StockInAddActivity extends BaseActivity {
 
                         @Override
                         public void onFail(JSONObject object) {
-
+                            Log.d(TAG,"deleteBox onFail:"+object.toString());
                         }
 
                         @Override
@@ -480,7 +637,7 @@ public class StockInAddActivity extends BaseActivity {
         }
         adapter.setDataList(cartonList);
         adapter.notifyDataSetChanged();
-        tv_box_count.setText(String.valueOf(cartonList.size()));
+//        tv_box_count.setText(String.valueOf(cartonList.size()));
     }
 
     private void boxAdd() {
@@ -497,7 +654,8 @@ public class StockInAddActivity extends BaseActivity {
                 TTSUtil.speak("exits box id");
                 return;
             }
-            request = new StringRequest(App.getMethod("/stockIn/addFinishGoodsBox"), RequestMethod.POST);
+            request = new StringRequest(App.getMethod("/stockIn/addBox"), RequestMethod.POST);
+            request.add("function",function);
             request.add("boxId", et_box_id.getText().toString());
             if (palletId != null) {
                 request.add("palletId", palletId);
@@ -575,6 +733,7 @@ public class StockInAddActivity extends BaseActivity {
             public void onOK(JSONObject object) {
                 cartonList.clear();
                 JSONArray jsonArray = object.getJSONArray("data");
+                Log.d(TAG,"add boxid onOK:"+object.toString());
                 for (Object o : jsonArray) {
                     JSONObject jsonObject = (JSONObject) o;
                     Carton carton = Carton.parse(jsonObject);
@@ -590,7 +749,9 @@ public class StockInAddActivity extends BaseActivity {
 
             @Override
             public void onFail(JSONObject object) {
+                Log.d(TAG,"add boxid onFail:"+object.toString());
                 TTSUtil.speak("Fail");
+                reset();
             }
 
             @Override
@@ -599,6 +760,85 @@ public class StockInAddActivity extends BaseActivity {
             }
         });
     }
+
+    private void terminalInAdd() {
+        StringRequest request = null;
+        if (StrUtil.equals(function, FUNCTION.FINISHED_GOODS.value)) {
+            String terminal = et_terminal_in.getText().toString();
+//            if (ObjectUtil.isAllNotEmpty(terminal, palletId)) {
+            if (palletId!=null) {
+                request = new StringRequest(App.getMethod("/stockIn/addTerminalIn"), RequestMethod.POST);
+                Log.d(TAG,"palletId:"+palletId);
+                Log.d(TAG,"terminal:"+terminal);
+                request.add("palletId", palletId);
+                request.add("terminal", terminal);
+            }
+        }
+        if (StrUtil.equals(function, FUNCTION.SEMI_FG.value)) {
+            String terminal = et_terminal.getText().toString();
+//            if (ObjectUtil.isAllNotEmpty(terminal, palletId)) {
+            if (palletId!=null) {
+                request = new StringRequest(App.getMethod("/stockIn/addTerminalIn"), RequestMethod.POST);
+                request.add("palletId", palletId);
+            }
+        }
+        if (StrUtil.equals(function, FUNCTION.RAW_MATERIAL.value)) {
+            String terminal = et_terminal.getText().toString();
+            if (ObjectUtil.isAllNotEmpty(terminal, palletId)) {
+                request = new StringRequest(App.getMethod("/stockIn/addRawMaterialSubmit"), RequestMethod.POST);
+                request.add("palletId", palletId);
+                request.add("firstFloor", cb_special_pallet.isChecked() ? 1 : 0);
+                request.set("terminal", et_terminal.getText().toString());
+            }
+        }
+        if (StrUtil.equals(function, FUNCTION.RTV_RTC.value)) {
+            String terminal = et_terminal.getText().toString();
+            if (ObjectUtil.isAllNotEmpty(terminal, palletId)) {
+                request = new StringRequest(App.getMethod("/stockIn/addRtcSubmit"), RequestMethod.POST);
+                request.add("palletId", palletId);
+                request.add("firstFloor", cb_special_pallet.isChecked() ? 1 : 0);
+                request.set("terminal", et_terminal.getText().toString());
+            }
+        }
+        if (StrUtil.equals(function, FUNCTION.STAGING.value)) {
+            String terminal = et_terminal.getText().toString();
+            if (ObjectUtil.isAllNotEmpty(terminal, palletId)) {
+                request = new StringRequest(App.getMethod("/stockIn/addStagingSubmit"), RequestMethod.POST);
+                request.add("palletId", palletId);
+                request.add("firstFloor", cb_special_pallet.isChecked() ? 1 : 0);
+                request.set("terminal", et_terminal.getText().toString());
+            }
+        }
+        if (request == null) {
+            ToastUtil.show(this, "Pallet ID is null,Check！");
+            TTSUtil.speak("error");
+            return;
+        }
+        CallServer.getInstance().add(0, request, new HttpResponse(StockInAddActivity.this) {
+            @Override
+            public void onStart(int what) {
+
+            }
+
+            @Override
+            public void onOK(JSONObject object) {
+                Log.d(TAG,"terminalInAdd onOK:"+object.toString());
+                TTSUtil.speak("ok");
+                onBackPressed();
+            }
+
+            @Override
+            public void onFail(JSONObject object) {
+                Log.d(TAG,"terminalInAdd onFail:"+object.toString());
+            }
+
+            @Override
+            public void onError() {
+                TTSUtil.speak("error");
+            }
+        });
+    }
+
 
     private class JumpTextWatcher implements TextWatcher {
         private EditText editText;
@@ -664,6 +904,12 @@ public class StockInAddActivity extends BaseActivity {
                     return;
                 }
             }
+
+            if (editText.getId() == et_terminal_in.getId()) {
+                //跳转回上一页面
+                terminalInAdd();
+            }
+
             if (nextView == null) {
                 return;
             }
@@ -677,9 +923,9 @@ public class StockInAddActivity extends BaseActivity {
             if (nextView.getId() == R.id.btn_add_box) {
                 boxAdd();
             }
-            if (nextView.getId() == R.id.btn_add_pallet) {
-                palletAdd();
-            }
+//            if (nextView.getId() == R.id.btn_add_pallet) {
+//                palletAdd();
+//            }
         }
     }
 

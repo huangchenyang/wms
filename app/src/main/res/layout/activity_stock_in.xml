@@ -52,13 +52,14 @@
         android:layout_marginStart="5dp"
         android:layout_marginTop="5dp"
         android:layout_marginEnd="5dp"
+        android:gravity="end"
         android:orientation="horizontal">
-
         <Button
             android:id="@+id/btn_new_pallet"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="40dp"
-            android:background="@drawable/bg_button"
+            android:background="#000000"
+            android:textColor="#ffffff"
             android:text="New Pallet"></Button>
 
         <Button
@@ -67,8 +68,25 @@
             android:layout_height="wrap_content"
             android:text="Out Exist Pallet"
             android:visibility="gone"></Button>
-    </LinearLayout>
 
+    </LinearLayout>
+    <EditText
+        android:id="@+id/et_box_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:hint="BoxID">
+
+    </EditText>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="Stock in Pallet pending Terminal in List:"
+        android:textColor="@color/black"
+        android:textStyle="bold">
+
+    </TextView>
     <ListView
         android:id="@+id/lv_biz_task"
         android:layout_width="match_parent"

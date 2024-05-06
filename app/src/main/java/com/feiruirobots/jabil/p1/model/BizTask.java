@@ -1,33 +1,46 @@
 package com.feiruirobots.jabil.p1.model;
 
+import android.util.Log;
+
 import com.alibaba.fastjson.JSONObject;
 
+import java.util.Date;
+
 public class BizTask {
-    private String id;
+    private int id;
     private String fromId;
-    private String destId;
-    private int palletId;
-    private int status;
-    private String bufferId;
-    private String referenceId;
-    private String desc;
-    private Boolean isPick;
-    private String msg;
-    private String name;
+    private Double height;
+    private int partQty;
+    private String firstFloor;
+    private int boxCount;
+    private int pull;
+    private String function;
+    private Date inTime;
+    private String status;
+    private Date createTime;
+    private String binId;
+    private String rtvType;
+    private String inventoryType;
+    private String binBarcodeUrlImg;
+    private static String TAG="hcy--BizTask";
 
     public static BizTask parse(JSONObject jsonObject) {
         BizTask bizTask = new BizTask();
-        bizTask.setBufferId(jsonObject.getString("buffer_id"));
-        bizTask.setPalletId(jsonObject.getInteger("pallet_id"));
-        bizTask.setFromId(jsonObject.getString("from_id"));
-        bizTask.setDestId(jsonObject.getString("dest_id"));
-        bizTask.setReferenceId(jsonObject.getString("reference_id"));
-        bizTask.setDesc(jsonObject.getString("desc"));
-        bizTask.setId(jsonObject.getString("id"));
-        bizTask.setStatus(jsonObject.getInteger("status"));
-        bizTask.setMsg(jsonObject.getString("msg"));
-        bizTask.setPick(jsonObject.getBoolean("is_pick"));
-        bizTask.setName(jsonObject.getString("name"));
+        int box_count = jsonObject.getInteger("box_count");
+        bizTask.setId(jsonObject.getInteger("id"));
+        bizTask.setBoxCount(jsonObject.getInteger("box_count"));
+        bizTask.setPartQty(jsonObject.getInteger("part_qty"));
+        bizTask.setHeight(jsonObject.getDouble("height"));
+        bizTask.setPull(jsonObject.getInteger("pull"));
+        bizTask.setFunction(jsonObject.getString("function"));
+        bizTask.setFirstFloor(jsonObject.getString("first_floor"));
+        bizTask.setStatus(jsonObject.getString("status"));
+        bizTask.setInTime(jsonObject.getDate("in_time"));
+        bizTask.setCreateTime(jsonObject.getDate("create_time"));
+        bizTask.setBinId(jsonObject.getString("bin_id"));
+        bizTask.setRtvType(jsonObject.getString("rtv_type"));
+        bizTask.setInventoryType(jsonObject.getString("inventory_type"));
+        bizTask.setBinBarcodeUrlImg(jsonObject.getString("bin_barcode_url_img"));
         return bizTask;
     }
 
@@ -40,85 +53,116 @@ public class BizTask {
         this.fromId = fromId;
     }
 
-    public String getDestId() {
-        return destId;
+    public Double getHeight() {
+        return height;
     }
 
-    public void setDestId(String destId) {
-        if (destId == null) destId = "-";
-        this.destId = destId;
+    public void setHeight(Double height) {
+        this.height = height;
     }
 
-    public int getPalletId() {
-        return palletId;
+    public int getPartQty() {
+        return partQty;
     }
 
-    public void setPalletId(int palletId) {
-        this.palletId = palletId;
+    public void setPartQty(int partQty) {
+        this.partQty = partQty;
     }
 
-    public int getStatus() {
-        return status;
+    public String getFirstFloor() {
+        return firstFloor;
     }
 
-    public void setStatus(int status) {
-        this.status = status;
+    public void setFirstFloor(String firstFloor) {
+        this.firstFloor = firstFloor;
     }
 
-    public String getBufferId() {
-        return bufferId;
+    public int getBoxCount() {
+        return boxCount;
     }
 
-    public void setBufferId(String bufferId) {
-        if (bufferId == null) bufferId = "-";
-        this.bufferId = bufferId;
+    public void setBoxCount(int boxCount) {
+        this.boxCount = boxCount;
     }
 
-    public String getReferenceId() {
-        return referenceId;
+    public int getReferenceId() {
+        return pull;
     }
 
-    public void setReferenceId(String referenceId) {
-        this.referenceId = referenceId;
+    public void setPull(int pull) {
+        this.pull = pull;
     }
 
-    public String getDesc() {
-        return desc;
+    public String getFunction() {
+        return function;
     }
 
-    public void setDesc(String desc) {
-        this.desc = desc;
+    public void setFunction(String function) {
+        this.function = function;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public Boolean isPick() {
-        return isPick;
+    public Date isInTime() {
+        return inTime;
     }
 
-    public void setPick(Boolean pick) {
-        isPick = pick;
+    public void setInTime(Date inTime) {
+        inTime = inTime;
     }
 
-    public String getMsg() {
-        return msg;
+    public String getStatus() {
+        return status;
     }
 
-    public void setMsg(String msg) {
-        this.msg = msg;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
-    public String getName() {
-        return name;
+    public Date getCreateTime() {
+        return createTime;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public String getBinId() {
+        return binId;
+    }
+
+    public void setBinId(String binId) {
+        this.binId = binId;
+    }
+
+    public String getRtvType() {
+        return rtvType;
+    }
+
+    public void setRtvType(String rtvType) {
+        this.rtvType = rtvType;
+    }
+
+    public String getInventoryType() {
+        return inventoryType;
+    }
+
+    public void setInventoryType(String inventoryType) {
+        this.inventoryType = inventoryType;
+    }
+
+
+    public String getBinBarcodeUrlImg() {
+        return binBarcodeUrlImg;
+    }
+
+    public void setBinBarcodeUrlImg(String binBarcodeUrlImg) {
+        this.binBarcodeUrlImg = binBarcodeUrlImg;
     }
 }

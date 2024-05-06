@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -40,6 +41,8 @@ public class StockOutActivity extends BaseActivity {
     private String function;
     private MyListAdapter<BizTaskView, BizTask> adapter;
     private List<BizTask> bizTaskList = new ArrayList<>();
+    private String TAG = "hcy--StockOutActivity";
+
     @BindView(R.id.lv_biz_task)
     ListView lv_biz_task;
     @SuppressLint("HandlerLeak")
@@ -68,7 +71,7 @@ public class StockOutActivity extends BaseActivity {
     }
 
     class BizTaskView {
-        TextView tv_from_to, tv_status, tv_desc, tv_reference_id;
+        TextView tv_pallet_id, tv_fgtf, tv_binid, tv_box_count,tv_terminal_in;
     }
 
     private void initListView() {
@@ -76,10 +79,11 @@ public class StockOutActivity extends BaseActivity {
             @Override
             public BizTaskView initView(View convertView, BizTaskView holder) {
                 if (holder == null) holder = new BizTaskView();
-                holder.tv_from_to = convertView.findViewById(R.id.tv_from_to);
-                holder.tv_status = convertView.findViewById(R.id.tv_status);
-                holder.tv_desc = convertView.findViewById(R.id.tv_desc);
-                holder.tv_reference_id = convertView.findViewById(R.id.tv_reference_id);
+                holder.tv_pallet_id = convertView.findViewById(R.id.tv_pallet_id);
+                holder.tv_fgtf = convertView.findViewById(R.id.tv_fgtf);
+                holder.tv_binid = convertView.findViewById(R.id.tv_binid);
+                holder.tv_box_count = convertView.findViewById(R.id.tv_box_count);
+                holder.tv_terminal_in = convertView.findViewById(R.id.tv_terminal_in);
                 return holder;
             }
 
@@ -87,34 +91,34 @@ public class StockOutActivity extends BaseActivity {
             public void initContent(BizTaskView holder, final BizTask data) {
                 StringBuilder stringBuilder = new StringBuilder();
                 stringBuilder.append(data.getFromId());
-                if (StrUtil.isNotBlank(data.getBufferId())) {
-                    stringBuilder.append("  →  ");
-                    stringBuilder.append(data.getBufferId());
-                }
-                if (StrUtil.isNotBlank(data.getDestId())) {
-                    stringBuilder.append("  →  ");
-                    stringBuilder.append(data.getDestId());
-                }
-                holder.tv_from_to.setText(stringBuilder.toString());
-                holder.tv_reference_id.setText(data.getId());
-                if (data.getStatus() == 3) {
-                    holder.tv_status.setText("Wait Pick");
-                } else if (data.getStatus() == 1) {
-                    holder.tv_status.setText("Wait Running");
-                } else {
-                    holder.tv_status.setText("Running");
-                }
-                holder.tv_desc.setText(data.getName());
+//                if (StrUtil.isNotBlank(data.getBufferId())) {
+//                    stringBuilder.append("  →  ");
+//                    stringBuilder.append(data.getBufferId());
+//                }
+//                if (StrUtil.isNotBlank(data.getDestId())) {
+//                    stringBuilder.append("  →  ");
+//                    stringBuilder.append(data.getDestId());
+//                }
+                holder.tv_pallet_id.setText(data.getId());
+                holder.tv_fgtf.setText(data.getId());
+//                if (data.getStatus() == 3) {
+//                    holder.tv_status.setText("Wait Pick");
+//                } else if (data.getStatus() == 1) {
+//                    holder.tv_status.setText("Wait Running");
+//                } else {
+//                    holder.tv_status.setText("Running");
+//                }
+//                holder.tv_desc.setText(data.getName());
             }
         };
         lv_biz_task.setOnItemClickListener((parent, view, position, id) -> {
-            if (adapter.getItem(position).getStatus() == 3) {
-                Intent intent = new Intent(StockOutActivity.this, StockOutScanActivity.class);
-                intent.putExtra("FUNCTION", function);
-                intent.putExtra("BizTaskId", (adapter.getItem(position)).getId());
-                startActivity(intent);
-                return;
-            }
+//            if (adapter.getItem(position).getStatus() == 3) {
+//                Intent intent = new Intent(StockOutActivity.this, StockOutScanActivity.class);
+//                intent.putExtra("FUNCTION", function);
+//                intent.putExtra("BizTaskId", (adapter.getItem(position)).getId());
+//                startActivity(intent);
+//                return;
+//            }
             TTSUtil.speak("pallet not arrived");
             ToastUtil.show(StockOutActivity.this, "pallet not arrived");
         });
@@ -125,11 +129,12 @@ public class StockOutActivity extends BaseActivity {
     }
 
     private void getBizTask() {
-        String url = App.getMethod("/retrive/list?function=" + function);
+        String url = App.getMethod("/retrive/retrieveList?function=" + function);
         StringRequest request = new StringRequest(url, RequestMethod.POST);
         CallServer.getInstance().add(0, request, new HttpResponse(StockOutActivity.this) {
             @Override
             public void onOK(JSONObject json) {
+                Log.d(TAG,"getBizTask onOK:"+json.toString());
                 bizTaskList.clear();
                 JSONArray arrays = json.getJSONArray("data");
                 for (Object array : arrays) {
@@ -142,6 +147,7 @@ public class StockOutActivity extends BaseActivity {
             @Override
             public void onFail(JSONObject object) {
                 TTSUtil.speak("task get failed");
+                Log.d(TAG,"getBizTask onFail:"+object.toString());
             }
 
             @Override
