@@ -1,6 +1,7 @@
 package com.feiruirobots.jabil.p1;
 
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -11,6 +12,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -20,6 +22,7 @@ import com.feiruirobots.jabil.p1.common.TTSUtil;
 import com.feiruirobots.jabil.p1.common.ToastUtil;
 import com.feiruirobots.jabil.p1.http.CallServer;
 import com.feiruirobots.jabil.p1.http.HttpResponse;
+import com.feiruirobots.jabil.p1.model.BillData;
 import com.feiruirobots.jabil.p1.model.Carton;
 import com.feiruirobots.jabil.p1.model.FUNCTION;
 import com.feiruirobots.jabil.p1.ui.ExtendedEditText;
@@ -42,17 +45,17 @@ public class StockOutScanActivity extends BaseActivity {
     private String bizTaskId;
     @BindView(R.id.et_scan_text)
     ExtendedEditText et_scan_text;
-
     @BindView(R.id.et_back_terminal)
     ExtendedEditText et_back_terminal;
-    @BindView(R.id.lv_scan_out)
-    ListView lv_scan_out;
+//    @BindView(R.id.lv_scan_out)
+//    ListView lv_scan_out;
     @BindView(R.id.lv_all)
     ListView lv_all;
-    private MyListAdapter<CartonView, Carton> outAdapter;
-    private MyListAdapter<CartonView, Carton> allAdapter;
-    private List<Carton> outList = new ArrayList<>();
-    private List<Carton> allList = new ArrayList<>();
+//    private MyListAdapter<CartonView, Carton> outAdapter;
+    private MyListAdapter<CartonView, BillData> allAdapter;
+//    private List<Carton> outList = new ArrayList<>();
+    private List<BillData> allList = new ArrayList<>();
+    private String TAG="hcy--StockOutScanActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,9 +68,9 @@ public class StockOutScanActivity extends BaseActivity {
         et_scan_text.addTextChangedListener(new JumpTextWatcher(et_scan_text, null));
         et_back_terminal.addTextChangedListener(new JumpTextWatcher(et_back_terminal, null));
         et_scan_text.setVisibility(View.VISIBLE);
-        initTitle(Objects.requireNonNull(FUNCTION.of(function)).msg + " Out");
-        getOutScan(null);
-        ScanOutListView();
+        initTitle("Retrieve->"+Objects.requireNonNull(FUNCTION.of(function)).msg+"->Retrieve BoxID");
+//        getOutScan(null);
+//        ScanOutListView();
         AllListView();
         getAll();
     }
@@ -76,6 +79,7 @@ public class StockOutScanActivity extends BaseActivity {
         TextView tv_t1, tv_t2, tv_t3, tv_qty, tv_finish;
     }
 
+    /*
     private void ScanOutListView() {
         if (outAdapter == null) {
             outAdapter = new MyListAdapter<CartonView, Carton>(StockOutScanActivity.this, outList, R.layout.item_carton) {
@@ -148,10 +152,11 @@ public class StockOutScanActivity extends BaseActivity {
         outAdapter.setDataList(outList);
         outAdapter.notifyDataSetChanged();
     }
+     */
 
     private void AllListView() {
         if (allAdapter == null) {
-            allAdapter = new MyListAdapter<CartonView, Carton>(StockOutScanActivity.this, allList, R.layout.item_carton) {
+            allAdapter = new MyListAdapter<CartonView, BillData>(StockOutScanActivity.this, allList, R.layout.item_carton) {
                 @Override
                 public CartonView initView(View convertView, CartonView holder) {
                     if (holder == null) holder = new CartonView();
@@ -163,7 +168,9 @@ public class StockOutScanActivity extends BaseActivity {
                     if (StrUtil.equals(function, FUNCTION.FINISHED_GOODS.value) || StrUtil.equals(function, FUNCTION.SEMI_FG.value)) {
                         holder.tv_t1.setVisibility(View.VISIBLE);
                         holder.tv_t2.setVisibility(View.VISIBLE);
-                        holder.tv_qty.setVisibility(View.VISIBLE);
+                        holder.tv_t3.setVisibility(View.VISIBLE);
+                        holder.tv_qty.setVisibility(View.GONE);
+                        holder.tv_finish.setVisibility(View.VISIBLE);
                     }
                     if (StrUtil.equals(function, FUNCTION.RAW_MATERIAL.value)) {
                         holder.tv_t1.setVisibility(View.VISIBLE);
@@ -183,11 +190,16 @@ public class StockOutScanActivity extends BaseActivity {
                 }
 
                 @Override
-                public void initContent(CartonView holder, Carton data) {
+                public void initContent(CartonView holder, BillData data) {
                     if (StrUtil.equals(function, FUNCTION.FINISHED_GOODS.value) || StrUtil.equals(function, FUNCTION.SEMI_FG.value)) {
-                        holder.tv_t1.setText("PN:" + data.getPartNo());
-                        holder.tv_t2.setText("BoxID:" + data.getBoxId());
-                        holder.tv_qty.setText("Q:" + data.getQty());
+                        holder.tv_t1.setText("RF: " + data.getBillNo());
+                        holder.tv_t2.setText("BinID: " + data.getFromStation());
+                        holder.tv_t3.setText("BoxID: " + data.getBoxId());
+                        if(data.getStatus().equals("0")){
+                            holder.tv_finish.setText("✔");
+                        }else if(data.getStatus().equals("1")){
+                            holder.tv_finish.setText("✔✔");
+                        }
                     }
                 }
             };
@@ -198,17 +210,18 @@ public class StockOutScanActivity extends BaseActivity {
     }
 
     private void getAll() {
-        StringRequest request = new StringRequest(App.getMethod("/retrive/listBox"), RequestMethod.POST);
-        request.add("bizTaskId", bizTaskId);
+        StringRequest request = new StringRequest(App.getMethod("/retrive/retrieveBoxList"), RequestMethod.POST);
+        request.add("billId", bizTaskId);
         CallServer.getInstance().add(0, request, new HttpResponse(StockOutScanActivity.this) {
             @Override
             public void onOK(JSONObject object) {
                 allList.clear();
+                Log.d(TAG,"getAll onOK:"+object.toString());
                 JSONArray arrays = object.getJSONArray("data");
                 for (Object array : arrays) {
                     JSONObject jsonObject = (JSONObject) array;
-                    Carton carton = Carton.parse(jsonObject);
-                    allList.add(carton);
+                    BillData billData = BillData.parse(jsonObject);
+                    allList.add(billData);
                 }
                 AllListView();
             }
@@ -225,6 +238,45 @@ public class StockOutScanActivity extends BaseActivity {
         });
     }
 
+    private void scanBox(String boxId) {
+        StringRequest request = new StringRequest(App.getMethod("/retrive/scanBox"), RequestMethod.POST);
+        request.add("billId", bizTaskId);
+        request.add("boxId", boxId);
+        request.add("function", function);
+        CallServer.getInstance().add(0, request, new HttpResponse(StockOutScanActivity.this) {
+            @Override
+            public void onOK(JSONObject object) {
+                boolean isFinish =true;
+                allList.clear();
+                Log.d(TAG,"scanBox onOK:"+object.toString());
+                JSONArray arrays = object.getJSONArray("data");
+                for (Object array : arrays) {
+                    JSONObject jsonObject = (JSONObject) array;
+                    BillData billData = BillData.parse(jsonObject);
+                    allList.add(billData);
+                    if(billData.getStatus().equals("0")){
+                        isFinish = false;
+                    }
+                }
+                AllListView();
+                if(isFinish){
+                    showConfirmationDialog();
+                }
+            }
+
+            @Override
+            public void onFail(JSONObject object) {
+
+            }
+
+            @Override
+            public void onError() {
+
+            }
+        });
+    }
+
+    /*
     private void getOutScan(String code) {
         StringRequest request = new StringRequest(App.getMethod("/retrive/outScan"), RequestMethod.POST);
         request.add("bizTaskId", bizTaskId);
@@ -283,6 +335,7 @@ public class StockOutScanActivity extends BaseActivity {
             }
         });
     }
+     */
 
     private class JumpTextWatcher implements TextWatcher {
         private EditText editText;
@@ -310,25 +363,36 @@ public class StockOutScanActivity extends BaseActivity {
             String str = editable.toString();
             if (str == null || (str.indexOf("\r") == -1 && str.indexOf("\n") == -1)) return;
             String str2 = str.replace("\r", "").replace("\n", "");
-            if (editText.getId() == R.id.et_scan_text) {
-                if (str2.length() > 5) {
-                    editText.setText(str2);
-                    getOutScan(str2);
-                    et_scan_text.setText(null);
-                    return;
-                }
-                editText.setText(null);
-                ToastUtil.show(StockOutScanActivity.this, "BoxId Input Error");
+
+            if (!StrUtil.startWithAny(str, "PA134", "PV19", "PAG1", "PAS1", "PA", "PABD", "PA95", "PA124", "PA112", "PA193", "PA140", "PCT8", "PA104", "PFGT", "BL19")) {
+                TTSUtil.speak("error");
+                et_scan_text.setText(null);
+                et_scan_text.requestFocus();
+                Toast.makeText(StockOutScanActivity.this, "invalid BoxID", Toast.LENGTH_SHORT).show();
+                return;
             }
-            if (editText.getId() == R.id.et_back_terminal) {
-                if (str2.startsWith("Terminal")) {
-                    editText.setText(str2);
-                    back();
-                    return;
-                }
-                editText.setText(null);
-                ToastUtil.show(StockOutScanActivity.this, "Terminal Input Error");
-            }
+            editText.setText(null);
+            scanBox(str2);
+
+//            if (editText.getId() == R.id.et_scan_text) {
+//                if (str2.length() > 5) {
+//                    editText.setText(str2);
+////                    getOutScan(str2);
+//                    et_scan_text.setText(null);
+//                    return;
+//                }
+//                editText.setText(null);
+//                ToastUtil.show(StockOutScanActivity.this, "BoxId Input Error");
+//            }
+//            if (editText.getId() == R.id.et_back_terminal) {
+//                if (str2.startsWith("Terminal")) {
+//                    editText.setText(str2);
+//                    back();
+//                    return;
+//                }
+//                editText.setText(null);
+//                ToastUtil.show(StockOutScanActivity.this, "Terminal Input Error");
+//            }
         }
     }
 
@@ -347,6 +411,19 @@ public class StockOutScanActivity extends BaseActivity {
         //取消按钮的点击事件
         dialog.setNegativeButton("Cancel", (dialog1, which) -> {
         });
+        dialog.show();
+    }
+
+    public void showConfirmationDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Reference "+bizTaskId+" Retrieve BoxlD have been all scanned");
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog dialog = builder.create();
         dialog.show();
     }
 }

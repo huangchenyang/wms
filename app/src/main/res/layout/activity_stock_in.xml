@@ -70,14 +70,14 @@
             android:visibility="gone"></Button>
 
     </LinearLayout>
-    <EditText
+    <com.feiruirobots.jabil.p1.ui.ExtendedEditText
         android:id="@+id/et_box_id"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:hint="BoxID">
 
-    </EditText>
+    </com.feiruirobots.jabil.p1.ui.ExtendedEditText>
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

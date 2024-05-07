@@ -61,7 +61,7 @@
             android:layout_height="50dp"
             android:layout_marginTop="5dp"
             android:background="@drawable/bg_button"
-            android:text="Finish Goods" />
+            android:text="Finish Goods(FG)" />
 
         <Button
             android:id="@+id/btn_simi_fg"
@@ -69,7 +69,7 @@
             android:layout_height="50dp"
             android:layout_marginTop="5dp"
             android:background="@drawable/bg_button"
-            android:text="Semi FG" />
+            android:text="Semi FG(SFG)" />
 
         <Button
             android:id="@+id/btn_raw_material"
@@ -77,7 +77,7 @@
             android:layout_height="50dp"
             android:layout_marginTop="5dp"
             android:background="@drawable/bg_button"
-            android:text="Raw Material" />
+            android:text="Raw Material(RM)" />
 
         <Button
             android:id="@+id/btn_rtc"
@@ -85,7 +85,7 @@
             android:layout_height="50dp"
             android:layout_marginTop="5dp"
             android:background="@drawable/bg_button"
-            android:text="RTC/RTV" />
+            android:text="RTC/RTV(RT)" />
 
         <Button
             android:id="@+id/btn_staging"
@@ -93,7 +93,7 @@
             android:layout_height="50dp"
             android:layout_marginTop="5dp"
             android:background="@drawable/bg_button"
-            android:text="Staging" />
+            android:text="Staging(STG)" />
     </LinearLayout>
 
 </RelativeLayout>

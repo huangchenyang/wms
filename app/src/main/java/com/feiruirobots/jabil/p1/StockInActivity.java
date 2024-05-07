@@ -133,11 +133,11 @@ public class StockInActivity extends BaseActivity {
 //                    stringBuilder.append(" →  ");
 //                    stringBuilder.append(data.getDestId());
 //                }
-                holder.tv_pallet_id.setText(String.valueOf(data.getId()));
-                holder.tv_fgtf.setText("");
-                holder.tv_binid.setText(data.getBinId());
-                holder.tv_box_count.setText(String.valueOf(data.getBoxCount()));
-                holder.tv_terminal_in.setText("");
+                holder.tv_pallet_id.setText("PID: "+String.valueOf(data.getId()));
+                holder.tv_fgtf.setText("FGTF: "+"");
+                holder.tv_binid.setText("BinID: "+data.getBinId());
+                holder.tv_box_count.setText("BC: "+String.valueOf(data.getBoxCount()));
+                holder.tv_terminal_in.setText("TIN: "+"");
 //                holder.tv_pallet_id.setText("Pallet ID:"+String.valueOf(data.getId()));
 //                holder.tv_fgtf.setText("Pallet ID:");
 //                holder.tv_binid.setText("BinID ID:"+data.getBinId());
@@ -196,6 +196,12 @@ public class StockInActivity extends BaseActivity {
         super.onResume();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // 在Activity销毁之前进行清理工作
+        handlerSend.removeCallbacksAndMessages(null);
+    }
 
     private class JumpTextWatcher implements TextWatcher {
         private EditText editText;

@@ -21,6 +21,9 @@ public class Carton {
     private Integer status;
     private String function;
 
+    //出库的
+    private String billNo;
+
     public static Carton parse(JSONObject jsonObject) {
         Carton carton = new Carton();
         carton.setPalletId(jsonObject.getInteger("pallet_id"));
@@ -38,6 +41,9 @@ public class Carton {
         carton.setCartonCount(jsonObject.getInteger("carton_count"));
         carton.setType(jsonObject.getString("type"));
         carton.setFunction(jsonObject.getString("function"));
+
+        carton.setBillNo(jsonObject.getString("bill_no"));
+        carton.setFromStation(jsonObject.getString("from_station"));
         return carton;
     }
 
@@ -175,5 +181,13 @@ public class Carton {
 
     public void setFunction(String function) {
         this.function = function;
+    }
+
+    public String getBillNo() {
+        return billNo;
+    }
+
+    public void setBillNo(String billNo) {
+        this.billNo = billNo;
     }
 }

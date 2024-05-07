@@ -46,6 +46,18 @@
         </LinearLayout>
     </RelativeLayout>
 
+    <com.feiruirobots.jabil.p1.ui.ExtendedEditText
+        android:id="@+id/et_perference"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@drawable/bg_edit"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="5dp"
+        android:hint="Reference"
+        android:paddingLeft="10dp" />
+
     <ListView
         android:id="@+id/lv_biz_task"
         android:layout_width="match_parent"

@@ -61,7 +61,7 @@
             android:layout_height="50dp"
             android:layout_weight="1"
             android:background="@drawable/bg_edit"
-            android:hint="scan bar code"
+            android:hint="BoxID"
             android:paddingStart="10dp" />
 
         <com.feiruirobots.jabil.p1.ui.ExtendedEditText
@@ -83,26 +83,26 @@
         android:layout_marginEnd="5dp"
         android:orientation="vertical">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="22dp"
-            android:text="Wait Scan and Scanned" />
+<!--        <TextView-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="22dp"-->
+<!--            android:text="Wait Scan and Scanned" />-->
 
-        <ListView
-            android:id="@+id/lv_scan_out"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="5" />
+<!--        <ListView-->
+<!--            android:id="@+id/lv_scan_out"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="0dp"-->
+<!--            android:layout_weight="5" />-->
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="@color/green" />
+<!--        <View-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="2dp"-->
+<!--            android:background="@color/green" />-->
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="22dp"
-            android:text="Remainder fo Pallet" />
+<!--        <TextView-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="22dp"-->
+<!--            android:text="Remainder fo Pallet" />-->
 
         <ListView
             android:id="@+id/lv_all"

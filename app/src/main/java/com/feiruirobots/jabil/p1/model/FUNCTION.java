@@ -3,11 +3,11 @@ package com.feiruirobots.jabil.p1.model;
 import cn.hutool.core.util.StrUtil;
 
 public enum FUNCTION {
-    FINISHED_GOODS("FINISHED_GOODS", "Finished Goods"),
-    SEMI_FG("SEMI_FG", "Semi FG"),
-    RAW_MATERIAL("RAW_MATERIAL", "Raw Material"),
-    RTV_RTC("RTV_RTC", "RTV RTC"),
-    STAGING("STAGING", "Staging");
+    FINISHED_GOODS("FINISHED_GOODS", "FG"),
+    SEMI_FG("SEMI_FG", "SFG"),
+    RAW_MATERIAL("RAW_MATERIAL", "RM"),
+    RTV_RTC("RTV_RTC", "RT"),
+    STAGING("STAGING", "STG");
     public String msg;
     public String value;
 

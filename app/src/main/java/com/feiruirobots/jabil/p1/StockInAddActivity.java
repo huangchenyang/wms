@@ -112,7 +112,7 @@ public class StockInAddActivity extends BaseActivity {
         ButterKnife.bind(this);
         Intent intent = this.getIntent();
         function = intent.getStringExtra("FUNCTION");
-        initTitle(Objects.requireNonNull(FUNCTION.of(function)).msg + " In Stock");
+        initTitle("Stock In->" +Objects.requireNonNull(FUNCTION.of(function)).msg+"->New Pallet Topup");
         addType = intent.getStringExtra("AddType");
         if(addType.equals("New Packet")){
 //            initTitle("New Stock In -> "+ Objects.requireNonNull(FUNCTION.of(function)).msg+"->New Pallet",true);
