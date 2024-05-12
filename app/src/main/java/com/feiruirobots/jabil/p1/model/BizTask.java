@@ -22,6 +22,7 @@ public class BizTask {
     private String rtvType;
     private String inventoryType;
     private String binBarcodeUrlImg;
+    private String terminal;
     private static String TAG="hcy--BizTask";
 
     public static BizTask parse(JSONObject jsonObject) {
@@ -41,6 +42,7 @@ public class BizTask {
         bizTask.setRtvType(jsonObject.getString("rtv_type"));
         bizTask.setInventoryType(jsonObject.getString("inventory_type"));
         bizTask.setBinBarcodeUrlImg(jsonObject.getString("bin_barcode_url_img"));
+        bizTask.setTerminal(jsonObject.getString("terminal"));
         return bizTask;
     }
 
@@ -164,5 +166,13 @@ public class BizTask {
 
     public void setBinBarcodeUrlImg(String binBarcodeUrlImg) {
         this.binBarcodeUrlImg = binBarcodeUrlImg;
+    }
+
+    public String getTerminal() {
+        return terminal;
+    }
+
+    public void setTerminal(String terminal) {
+        this.terminal = terminal;
     }
 }

@@ -420,6 +420,7 @@ public class StockOutScanActivity extends BaseActivity {
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                finish();
                 dialog.dismiss();
             }
         });

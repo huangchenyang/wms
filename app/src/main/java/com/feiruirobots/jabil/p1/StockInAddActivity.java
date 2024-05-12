@@ -121,6 +121,11 @@ public class StockInAddActivity extends BaseActivity {
             cartonList.clear();
             palletId = existPallet.getId();
             cartonList = existCartonList;
+            String terminal = existPallet.getTerminal();
+            Log.d(TAG,"terminal:"+terminal);
+            if(terminal==null || terminal.equals("")){
+                et_terminal_in.setVisibility(View.VISIBLE);
+            }
         }
         initView();
         refreshListView();
@@ -200,6 +205,36 @@ public class StockInAddActivity extends BaseActivity {
                 et_rma.addTextChangedListener(new JumpTextWatcher(et_rma, btn_add_box));
             } else {
                 et_box_id.addTextChangedListener(new JumpTextWatcher(et_box_id, btn_add_box));
+            }
+            et_terminal_in.addTextChangedListener(new JumpTextWatcher(et_terminal_in, null));
+            btn_cancle_new_pallet.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    palletDelete();
+                }
+            });
+
+            btn_apply_bin.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    palletAdd();
+                }
+            });
+
+            if(addType.equals("Exist Packet")){
+                btn_apply_bin.setVisibility(View.GONE);
+                cb_special_pallet.setVisibility(View.GONE);
+                tv_binid.setVisibility(View.VISIBLE);
+                img_barcode.setVisibility(View.VISIBLE);
+                tv_binid.setText(existPallet.getBinId());
+                //显示条行码
+                String imageUrl = App.getCodeBarUrl()+existPallet.getBinBarcodeUrlImg();
+                Log.d(TAG,"imageUrl:"+imageUrl);
+                Glide.with(StockInAddActivity.this)
+                        .load(imageUrl)
+                        .override(1080,1080)
+                        //.thumbnail(0.1f)  // 设置缩略图比例
+                        .into(img_barcode);
             }
         }
         if (StrUtil.equals(function, FUNCTION.RAW_MATERIAL.value)) {
@@ -340,6 +375,17 @@ public class StockInAddActivity extends BaseActivity {
 
     private void palletAdd() {
         StringRequest request = null;
+        Log.d(TAG,"palletAdd");
+        if (palletId!=null) {
+            request = new StringRequest(App.getMethod("/stockIn/applyBin"), RequestMethod.POST);
+            Log.d(TAG,"palletId:"+palletId);
+            request.add("palletId", palletId);
+            request.add("firstFloor", cb_special_pallet.isChecked() ? 1 : 0);
+            request.add("function", function);
+//            request.set("terminal", et_terminal.getText().toString());
+        }
+
+        /*
         if (StrUtil.equals(function, FUNCTION.FINISHED_GOODS.value)) {
             String terminal = et_terminal.getText().toString();
 //            if (ObjectUtil.isAllNotEmpty(terminal, palletId)) {
@@ -387,6 +433,7 @@ public class StockInAddActivity extends BaseActivity {
                 request.set("terminal", et_terminal.getText().toString());
             }
         }
+         */
         if (request == null) {
             ToastUtil.show(this, "Pallet ID is null,Check！");
             TTSUtil.speak("error");
@@ -436,14 +483,24 @@ public class StockInAddActivity extends BaseActivity {
 
     private void palletDelete() {
         StringRequest request = null;
-        if (StrUtil.equals(function, FUNCTION.FINISHED_GOODS.value)) {
-            String terminal = et_terminal.getText().toString();
-            if (palletId !=null) {
-                request = new StringRequest(App.getMethod("/stockIn/deletePallet"), RequestMethod.POST);
-                Log.d(TAG,"palletId:"+palletId);
-                request.add("palletId", palletId);
-            }
+
+        if (palletId !=null) {
+            request = new StringRequest(App.getMethod("/stockIn/deletePallet"), RequestMethod.POST);
+            Log.d(TAG,"palletId:"+palletId);
+            request.add("palletId", palletId);
+            request.add("function", function);
         }
+
+//        if (StrUtil.equals(function, FUNCTION.FINISHED_GOODS.value)) {
+//            String terminal = et_terminal.getText().toString();
+//            if (palletId !=null) {
+//                request = new StringRequest(App.getMethod("/stockIn/deletePallet"), RequestMethod.POST);
+//                Log.d(TAG,"palletId:"+palletId);
+//                request.add("palletId", palletId);
+//                request.add("function", function);
+//            }
+//        }
+
 //        if (StrUtil.equals(function, FUNCTION.SEMI_FG.value)) {
 //            String terminal = et_terminal.getText().toString();
 //            if (ObjectUtil.isAllNotEmpty(terminal, palletId)) {
@@ -588,6 +645,7 @@ public class StockInAddActivity extends BaseActivity {
                     StringRequest request = new StringRequest(App.getMethod("/stockIn/deleteBox"), RequestMethod.POST);
                     request.add("id", cartonList.get(position).getId());
                     request.add("palletId", palletId);
+                    request.add("function", function);
                     CallServer.getInstance().add(0, request, new HttpResponse(StockInAddActivity.this) {
                         @Override
                         public void onStart(int what) {
@@ -597,9 +655,7 @@ public class StockInAddActivity extends BaseActivity {
                         @Override
                         public void onOK(JSONObject object) {
                             Log.d(TAG,"deleteBox onOK:"+object.toString());
-//                            if(addType.equals("New Packet")){
-//                                cartonList.clear();
-//                            }
+                            cartonList.clear();
                             JSONArray jsonArray = object.getJSONArray("data");
                             for (Object o : jsonArray) {
                                 JSONObject jsonObject = (JSONObject) o;
@@ -676,7 +732,9 @@ public class StockInAddActivity extends BaseActivity {
                 TTSUtil.speak("exits box id");
                 return;
             }
-            request = new StringRequest(App.getMethod("/stockIn/addSemiFGBox"), RequestMethod.POST);
+            Log.d(TAG,"add semi_fg box id");
+            request = new StringRequest(App.getMethod("/stockIn/addBox"), RequestMethod.POST);
+            request.add("function",function);
             request.add("boxId", et_box_id.getText().toString());
             if (palletId != null) {
                 request.add("palletId", palletId);
@@ -690,7 +748,8 @@ public class StockInAddActivity extends BaseActivity {
             request.add("workCell", sp_work_cell.getSelectedItem().toString());
         }
         if (StrUtil.equals(function, FUNCTION.RAW_MATERIAL.value)) {
-            request = new StringRequest(App.getMethod("/stockIn/addRawMaterialBox"), RequestMethod.POST);
+            request = new StringRequest(App.getMethod("/stockIn/addBox"), RequestMethod.POST);
+            request.add("function",function);
             request.add("referenceId", et_reference_id.getText().toString());
             request.add("grn", et_grn.getText().toString());
             if (palletId != null) {
@@ -701,7 +760,8 @@ public class StockInAddActivity extends BaseActivity {
             if (!ObjectUtil.isAllNotEmpty(et_esr.getText())) {
                 return;
             }
-            request = new StringRequest(App.getMethod("/stockIn/addRtcBox"), RequestMethod.POST);
+            request = new StringRequest(App.getMethod("/stockIn/addBox"), RequestMethod.POST);
+            request.add("function",function);
             request.add("type", sp_type.getSelectedItem().toString());
             request.add("esr", et_esr.getText().toString());
             request.add("cartonCount", et_carton_count.getText().toString());
@@ -713,7 +773,8 @@ public class StockInAddActivity extends BaseActivity {
             if (!ObjectUtil.isAllNotEmpty(et_esr.getText())) {
                 return;
             }
-            request = new StringRequest(App.getMethod("/stockIn/addStagingBox"), RequestMethod.POST);
+            request = new StringRequest(App.getMethod("/stockIn/addBox"), RequestMethod.POST);
+            request.add("function",function);
             request.add("type", sp_type.getSelectedItem().toString());
             request.add("esr", et_esr.getText().toString());
             request.add("forward", sp_forward.getSelectedItem().toString());
@@ -775,11 +836,14 @@ public class StockInAddActivity extends BaseActivity {
             }
         }
         if (StrUtil.equals(function, FUNCTION.SEMI_FG.value)) {
-            String terminal = et_terminal.getText().toString();
+            String terminal = et_terminal_in.getText().toString();
 //            if (ObjectUtil.isAllNotEmpty(terminal, palletId)) {
             if (palletId!=null) {
                 request = new StringRequest(App.getMethod("/stockIn/addTerminalIn"), RequestMethod.POST);
+                Log.d(TAG,"palletId:"+palletId);
+                Log.d(TAG,"terminal:"+terminal);
                 request.add("palletId", palletId);
+                request.add("terminal", terminal);
             }
         }
         if (StrUtil.equals(function, FUNCTION.RAW_MATERIAL.value)) {

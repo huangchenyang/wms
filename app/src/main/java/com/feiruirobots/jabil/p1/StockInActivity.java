@@ -137,7 +137,7 @@ public class StockInActivity extends BaseActivity {
                 holder.tv_fgtf.setText("FGTF: "+"");
                 holder.tv_binid.setText("BinID: "+data.getBinId());
                 holder.tv_box_count.setText("BC: "+String.valueOf(data.getBoxCount()));
-                holder.tv_terminal_in.setText("TIN: "+"");
+                holder.tv_terminal_in.setText("TIN: "+data.getTerminal());
 //                holder.tv_pallet_id.setText("Pallet ID:"+String.valueOf(data.getId()));
 //                holder.tv_fgtf.setText("Pallet ID:");
 //                holder.tv_binid.setText("BinID ID:"+data.getBinId());
@@ -169,7 +169,7 @@ public class StockInActivity extends BaseActivity {
                 bizTaskList.clear();
                 JSONArray arrays = json.getJSONArray("data");
                 for (Object array : arrays) {
-                    Log.d(TAG,"array:"+array.toString());
+//                    Log.d(TAG,"array:"+array.toString());
                     JSONObject jsonObject = (JSONObject) array;
                     BizTask bizTask =BizTask.parse(jsonObject);
                     bizTaskList.add(bizTask);
@@ -225,22 +225,24 @@ public class StockInActivity extends BaseActivity {
         public void afterTextChanged(Editable editable) {
             String str = editable.toString();
             if (str.equals("") || str == null || (str.indexOf("\r") == -1 && str.indexOf("\n") == -1)) return;
-            editText.setText(str.replace("\r", "").replace("\n", ""));
-            Log.d(TAG,"afterTextChanged:"+str);
-            if (!StrUtil.startWithAny(str, "PA134", "PV19", "PAG1", "PAS1", "PA", "PABD", "PA95", "PA124", "PA112", "PA193", "PA140", "PCT8", "PA104", "PFGT", "BL19")) {
+            String newStr = str.replace("\r", "").replace("\n", "");
+            editText.setText(newStr);
+            Log.d(TAG,"afterTextChanged:"+newStr);
+            if (!StrUtil.startWithAny(newStr, "PA134", "PV19", "PAG1", "PAS1", "PA", "PABD", "PA95", "PA124", "PA112", "PA193", "PA140", "PCT8", "PA104", "PFGT", "BL19")) {
                 TTSUtil.speak("error");
                 et_box_id.setText(null);
                 et_box_id.requestFocus();
                 Toast.makeText(StockInActivity.this, "invalid BoxID", Toast.LENGTH_SHORT).show();
                 return;
             }
-            getPalletInfo(str);
+            getPalletInfo(newStr);
         }
     }
 
     private void getPalletInfo(String boxid) {
         String url = App.getMethod("/stockIn/palletInfo?function=" + function);
         StringRequest request = new StringRequest(url, RequestMethod.POST);
+        request.add("id", boxid);
         CallServer.getInstance().add(0, request, new HttpResponse(StockInActivity.this) {
             @Override
             public void onStart(int what) {

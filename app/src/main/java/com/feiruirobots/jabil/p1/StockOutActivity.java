@@ -139,14 +139,12 @@ public class StockOutActivity extends BaseActivity {
                 bizTaskList.clear();
                 JSONArray arrays = json.getJSONArray("data");
                 for (Object array : arrays) {
-                    Log.d(TAG,"array:"+array.toString());
                     JSONObject jsonObject = (JSONObject) array;
-                    bizTaskList.add(BillData.parse(jsonObject));
-                }
-                for (BillData bizTask:bizTaskList){
-                    Log.d(TAG,"getBillNo:"+bizTask.getBillNo());
-                    Log.d(TAG,"getWorkCell:"+bizTask.getWorkCell());
-                    Log.d(TAG,"getFromStation:"+bizTask.getFromStation());
+                    if(!jsonObject.getString("status").equals("1")){
+                        bizTaskList.add(BillData.parse(jsonObject));
+                    }else{
+                        Log.d(TAG,"had retrieve billNo");
+                    }
                 }
                 adapter.notifyDataSetChanged();
             }
