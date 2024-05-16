@@ -6,10 +6,12 @@ import static com.feiruirobots.jabil.p1.StockInActivity.existPallet;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -104,6 +106,7 @@ public class StockInAddActivity extends BaseActivity {
     private MyListAdapter adapter;
     private String TAG = "hcy--StockInAddActivity";
     private String addType = "";
+    private String binImageUrl = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -163,7 +166,16 @@ public class StockInAddActivity extends BaseActivity {
             btn_cancle_new_pallet.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    palletDelete();
+                    AlertDialog.Builder dialog = new AlertDialog.Builder(StockInAddActivity.this);
+                    dialog.setTitle("Alert");
+                    dialog.setMessage("Cancle Pallet!");
+                    dialog.setCancelable(false);
+                    dialog.setPositiveButton("OK", (dialog12, which) -> {
+                        palletDelete();
+                    });
+                    dialog.setNegativeButton("Cancel", (dialog1, which) -> {
+                    });
+                    dialog.show();
                 }
             });
 
@@ -171,6 +183,18 @@ public class StockInAddActivity extends BaseActivity {
                 @Override
                 public void onClick(View view) {
                     palletAdd();
+                }
+            });
+
+            img_barcode.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+                    Intent intent = new Intent();
+                    intent.setAction(Intent.ACTION_VIEW);
+                    Uri uri = Uri.parse(binImageUrl);
+                    intent.setDataAndType(uri, "image/*");
+                    startActivity(intent);
+                    return false;
                 }
             });
 
@@ -182,12 +206,14 @@ public class StockInAddActivity extends BaseActivity {
                 tv_binid.setText(existPallet.getBinId());
                 //显示条行码
                 String imageUrl = App.getCodeBarUrl()+existPallet.getBinBarcodeUrlImg();
+                binImageUrl = imageUrl;
                 Log.d(TAG,"imageUrl:"+imageUrl);
                 Glide.with(StockInAddActivity.this)
                         .load(imageUrl)
                         .override(1080,1080)
                         //.thumbnail(0.1f)  // 设置缩略图比例
                         .into(img_barcode);
+
             }
         }
         if (StrUtil.equals(function, FUNCTION.SEMI_FG.value)) {
@@ -210,7 +236,16 @@ public class StockInAddActivity extends BaseActivity {
             btn_cancle_new_pallet.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    palletDelete();
+                    AlertDialog.Builder dialog = new AlertDialog.Builder(StockInAddActivity.this);
+                    dialog.setTitle("Alert");
+                    dialog.setMessage("Cancle Pallet!");
+                    dialog.setCancelable(false);
+                    dialog.setPositiveButton("OK", (dialog12, which) -> {
+                        palletDelete();
+                    });
+                    dialog.setNegativeButton("Cancel", (dialog1, which) -> {
+                    });
+                    dialog.show();
                 }
             });
 
@@ -218,6 +253,18 @@ public class StockInAddActivity extends BaseActivity {
                 @Override
                 public void onClick(View view) {
                     palletAdd();
+                }
+            });
+
+            img_barcode.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+                    Intent intent = new Intent();
+                    intent.setAction(Intent.ACTION_VIEW);
+                    Uri uri = Uri.parse(binImageUrl);
+                    intent.setDataAndType(uri, "image/*");
+                    startActivity(intent);
+                    return false;
                 }
             });
 
@@ -229,6 +276,7 @@ public class StockInAddActivity extends BaseActivity {
                 tv_binid.setText(existPallet.getBinId());
                 //显示条行码
                 String imageUrl = App.getCodeBarUrl()+existPallet.getBinBarcodeUrlImg();
+                binImageUrl = imageUrl;
                 Log.d(TAG,"imageUrl:"+imageUrl);
                 Glide.with(StockInAddActivity.this)
                         .load(imageUrl)
@@ -460,6 +508,7 @@ public class StockInAddActivity extends BaseActivity {
                 BizTask bizTask =BizTask.parse(dataObject);
                 tv_binid.setText(bizTask.getBinId());
                 String imageUrl = App.getCodeBarUrl()+bizTask.getBinBarcodeUrlImg();
+                binImageUrl = imageUrl;
                 Log.d(TAG,"imageUrl:"+imageUrl);
                 Glide.with(StockInAddActivity.this)
                         .load(imageUrl)
