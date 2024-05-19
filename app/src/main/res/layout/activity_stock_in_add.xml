@@ -84,7 +84,15 @@
                 android:layout_height="40dp"
                 android:layout_gravity="center"
                 android:layout_weight="3"
-                android:text="BatchNo"
+                android:text="Batch"
+                android:visibility="gone" />
+            <CheckBox
+                android:id="@+id/cb_hub"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:layout_weight="3"
+                android:text="HUM"
                 android:visibility="gone" />
         </LinearLayout>
 
@@ -224,7 +232,7 @@
             android:background="@drawable/bg_edit"
             android:focusable="true"
             android:focusableInTouchMode="true"
-            android:hint="Batch No"
+            android:hint="Batch"
             android:paddingLeft="10dp"
             android:visibility="gone" />
 

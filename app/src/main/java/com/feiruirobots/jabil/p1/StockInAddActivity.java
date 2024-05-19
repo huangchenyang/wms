@@ -13,6 +13,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -100,6 +101,7 @@ public class StockInAddActivity extends BaseActivity {
     ExtendedEditText et_batch_no;
     @BindView(R.id.et_terminal_in)
     ExtendedEditText et_terminal_in;
+    CheckBox cb_hub;
     private String function;
     private Integer palletId;
     private List<Carton> cartonList = new ArrayList<>();
@@ -146,8 +148,11 @@ public class StockInAddActivity extends BaseActivity {
     private void initView() {
         et_terminal.addTextChangedListener(new JumpTextWatcher(et_terminal, btn_apply_bin));
         if (StrUtil.equals(function, FUNCTION.FINISHED_GOODS.value)) {
+            cb_hub = findViewById(R.id.cb_hub);
             sp_work_cell.setVisibility(View.VISIBLE);
-            cb_rma.setVisibility(View.VISIBLE);
+            cb_batch_no.setVisibility(View.VISIBLE);
+            cb_hub.setVisibility(View.VISIBLE);
+            cb_hub.setEnabled(true);
             et_fgtf.setVisibility(View.VISIBLE);
             et_part_no.setVisibility(View.VISIBLE);
             et_qty.setVisibility(View.VISIBLE);
@@ -155,9 +160,9 @@ public class StockInAddActivity extends BaseActivity {
             et_fgtf.addTextChangedListener(new JumpTextWatcher(et_fgtf, et_part_no));
             et_part_no.addTextChangedListener(new JumpTextWatcher(et_part_no, et_qty));
             et_qty.addTextChangedListener(new JumpTextWatcher(et_qty, et_box_id));
-            if (et_rma.getVisibility() == View.VISIBLE) {
-                et_box_id.addTextChangedListener(new JumpTextWatcher(et_box_id, et_rma));
-                et_rma.addTextChangedListener(new JumpTextWatcher(et_rma, btn_add_box));
+            if (et_batch_no.getVisibility() == View.VISIBLE) {
+                et_box_id.addTextChangedListener(new JumpTextWatcher(et_box_id, et_batch_no));
+                et_batch_no.addTextChangedListener(new JumpTextWatcher(et_batch_no, btn_add_box));
             } else {
                 et_box_id.addTextChangedListener(new JumpTextWatcher(et_box_id, btn_add_box));
             }
@@ -199,36 +204,44 @@ public class StockInAddActivity extends BaseActivity {
             });
 
             if(addType.equals("Exist Packet")){
-                btn_apply_bin.setVisibility(View.GONE);
-                cb_special_pallet.setVisibility(View.GONE);
-                tv_binid.setVisibility(View.VISIBLE);
-                img_barcode.setVisibility(View.VISIBLE);
-                tv_binid.setText(existPallet.getBinId());
-                //显示条行码
-                String imageUrl = App.getCodeBarUrl()+existPallet.getBinBarcodeUrlImg();
-                binImageUrl = imageUrl;
-                Log.d(TAG,"imageUrl:"+imageUrl);
-                Glide.with(StockInAddActivity.this)
-                        .load(imageUrl)
-                        .override(1080,1080)
-                        //.thumbnail(0.1f)  // 设置缩略图比例
-                        .into(img_barcode);
-
+                String binID = existPallet.getBinId();
+                if(binID==null || binID.equals("") || binID.equals("null")){
+                    btn_apply_bin.setVisibility(View.VISIBLE);
+                    cb_special_pallet.setVisibility(View.VISIBLE);
+                    cb_hub.setEnabled(true);
+                }else{
+                    btn_apply_bin.setVisibility(View.GONE);
+                    cb_special_pallet.setVisibility(View.GONE);
+                    tv_binid.setVisibility(View.VISIBLE);
+                    img_barcode.setVisibility(View.VISIBLE);
+                    tv_binid.setText(existPallet.getBinId());
+                    cb_hub.setEnabled(false);      //存在binId，则不需要再进行勾选hub
+                    //显示条行码
+                    String imageUrl = App.getCodeBarUrl()+existPallet.getBinBarcodeUrlImg();
+                    binImageUrl = imageUrl;
+                    Log.d(TAG,"imageUrl:"+imageUrl);
+                    Glide.with(StockInAddActivity.this)
+                            .load(imageUrl)
+                            .override(1080,1080)
+                            //.thumbnail(0.1f)  // 设置缩略图比例
+                            .into(img_barcode);
+                }
             }
         }
         if (StrUtil.equals(function, FUNCTION.SEMI_FG.value)) {
             sp_work_cell.setVisibility(View.VISIBLE);
             et_fgtf.setVisibility(View.VISIBLE);
-            cb_rma.setVisibility(View.VISIBLE);
+//            cb_rma.setVisibility(View.VISIBLE);
+            cb_batch_no.setVisibility(View.VISIBLE);
             et_part_no.setVisibility(View.VISIBLE);
             et_qty.setVisibility(View.VISIBLE);
             et_box_id.setVisibility(View.VISIBLE);
             et_fgtf.addTextChangedListener(new JumpTextWatcher(et_fgtf, et_part_no));
             et_part_no.addTextChangedListener(new JumpTextWatcher(et_part_no, et_qty));
             et_qty.addTextChangedListener(new JumpTextWatcher(et_qty, et_box_id));
-            if (et_rma.getVisibility() == View.VISIBLE) {
-                et_box_id.addTextChangedListener(new JumpTextWatcher(et_box_id, et_rma));
-                et_rma.addTextChangedListener(new JumpTextWatcher(et_rma, btn_add_box));
+            if (et_batch_no.getVisibility() == View.VISIBLE) {
+                et_box_id.addTextChangedListener(new JumpTextWatcher(et_box_id, et_batch_no));
+                et_batch_no.addTextChangedListener(new JumpTextWatcher(et_batch_no, btn_add_box));
             } else {
                 et_box_id.addTextChangedListener(new JumpTextWatcher(et_box_id, btn_add_box));
             }
@@ -269,20 +282,26 @@ public class StockInAddActivity extends BaseActivity {
             });
 
             if(addType.equals("Exist Packet")){
-                btn_apply_bin.setVisibility(View.GONE);
-                cb_special_pallet.setVisibility(View.GONE);
-                tv_binid.setVisibility(View.VISIBLE);
-                img_barcode.setVisibility(View.VISIBLE);
-                tv_binid.setText(existPallet.getBinId());
-                //显示条行码
-                String imageUrl = App.getCodeBarUrl()+existPallet.getBinBarcodeUrlImg();
-                binImageUrl = imageUrl;
-                Log.d(TAG,"imageUrl:"+imageUrl);
-                Glide.with(StockInAddActivity.this)
-                        .load(imageUrl)
-                        .override(1080,1080)
-                        //.thumbnail(0.1f)  // 设置缩略图比例
-                        .into(img_barcode);
+                String binID = existPallet.getBinId();
+                if(binID==null || binID.equals("") || binID.equals("null")){
+                    btn_apply_bin.setVisibility(View.VISIBLE);
+                    cb_special_pallet.setVisibility(View.VISIBLE);
+                }else{
+                    btn_apply_bin.setVisibility(View.GONE);
+                    cb_special_pallet.setVisibility(View.GONE);
+                    tv_binid.setVisibility(View.VISIBLE);
+                    img_barcode.setVisibility(View.VISIBLE);
+                    tv_binid.setText(existPallet.getBinId());
+                    //显示条行码
+                    String imageUrl = App.getCodeBarUrl()+existPallet.getBinBarcodeUrlImg();
+                    binImageUrl = imageUrl;
+                    Log.d(TAG,"imageUrl:"+imageUrl);
+                    Glide.with(StockInAddActivity.this)
+                            .load(imageUrl)
+                            .override(1080,1080)
+                            //.thumbnail(0.1f)  // 设置缩略图比例
+                            .into(img_barcode);
+                }
             }
         }
         if (StrUtil.equals(function, FUNCTION.RAW_MATERIAL.value)) {
@@ -305,6 +324,22 @@ public class StockInAddActivity extends BaseActivity {
             et_carton_count.setVisibility(View.VISIBLE);
             et_esr.addTextChangedListener(new JumpTextWatcher(et_esr, et_carton_count));
             et_carton_count.addTextChangedListener(new JumpTextWatcher(et_carton_count, btn_add_box));
+
+            sp_type.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    if(i==0){
+                        et_carton_count.setVisibility(View.GONE);
+                    }else {
+                        et_carton_count.setVisibility(View.VISIBLE);
+                    }
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+
+                }
+            });
         }
         if (StrUtil.equals(function, FUNCTION.STAGING.value)) {
             sp_type.setVisibility(View.VISIBLE);
@@ -313,6 +348,21 @@ public class StockInAddActivity extends BaseActivity {
             et_carton_count.setVisibility(View.VISIBLE);
             et_esr.addTextChangedListener(new JumpTextWatcher(et_esr, et_carton_count));
             et_carton_count.addTextChangedListener(new JumpTextWatcher(et_carton_count, btn_add_box));
+            sp_type.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    if(i==0){
+                        et_carton_count.setVisibility(View.GONE);
+                    }else {
+                        et_carton_count.setVisibility(View.VISIBLE);
+                    }
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+
+                }
+            });
         }
     }
 
@@ -516,11 +566,18 @@ public class StockInAddActivity extends BaseActivity {
                         //.thumbnail(0.1f)  // 设置缩略图比例
                         .into(img_barcode);
 //                StockInAddActivity.this.finish();
+
+                if (StrUtil.equals(function, FUNCTION.FINISHED_GOODS.value)) {
+                    cb_hub.setEnabled(false);   //存在，则不需要再进行hum
+                }
             }
 
             @Override
             public void onFail(JSONObject object) {
                 Log.d(TAG,"palletAdd onFail:"+object.toString());
+                if (StrUtil.equals(function, FUNCTION.FINISHED_GOODS.value)) {
+                    cb_hub.setEnabled(true);
+                }
             }
 
             @Override
@@ -746,6 +803,7 @@ public class StockInAddActivity extends BaseActivity {
     }
 
     private void boxAdd() {
+        Log.d(TAG,"boxAdd");
         StringRequest request = null;
         if (StrUtil.equals(function, FUNCTION.FINISHED_GOODS.value)) {
             if (!ObjectUtil.isAllNotEmpty(et_box_id.getText(), et_part_no.getText(), et_qty.getText())) {
@@ -765,13 +823,14 @@ public class StockInAddActivity extends BaseActivity {
             if (palletId != null) {
                 request.add("palletId", palletId);
             }
-            if (et_rma.getVisibility() == View.VISIBLE) {
-                request.add("rma", et_rma.getText().toString());
+            if (et_batch_no.getVisibility() == View.VISIBLE) {
+                request.add("batch", et_batch_no.getText().toString());
             }
             request.add("partNo", et_part_no.getText().toString());
             request.add("qty", et_qty.getText().toString());
             request.add("fgtf", et_fgtf.getText().toString());
             request.add("workCell", sp_work_cell.getSelectedItem().toString());
+            request.add("hub", cb_hub.isChecked() ? 1 : 0);
         }
         if (StrUtil.equals(function, FUNCTION.SEMI_FG.value)) {
             if (!ObjectUtil.isAllNotEmpty(et_box_id.getText(), et_part_no.getText(), et_qty.getText())) {
@@ -788,8 +847,11 @@ public class StockInAddActivity extends BaseActivity {
             if (palletId != null) {
                 request.add("palletId", palletId);
             }
-            if (et_rma.getVisibility() == View.VISIBLE) {
-                request.add("rma", et_rma.getText().toString());
+//            if (et_rma.getVisibility() == View.VISIBLE) {
+//                request.add("rma", et_rma.getText().toString());
+//            }
+            if (et_batch_no.getVisibility() == View.VISIBLE) {
+                request.add("batch", et_batch_no.getText().toString());
             }
             request.add("partNo", et_part_no.getText().toString());
             request.add("fgtf", et_fgtf.getText().toString());
@@ -806,14 +868,19 @@ public class StockInAddActivity extends BaseActivity {
             }
         }
         if (StrUtil.equals(function, FUNCTION.RTV_RTC.value)) {
+            Log.d(TAG,"RTV_RTC");
             if (!ObjectUtil.isAllNotEmpty(et_esr.getText())) {
                 return;
             }
+            Log.d(TAG,"RTV_RTC--1");
             request = new StringRequest(App.getMethod("/stockIn/addBox"), RequestMethod.POST);
             request.add("function",function);
-            request.add("type", sp_type.getSelectedItem().toString());
+            String spType = sp_type.getSelectedItem().toString();
+            request.add("type", spType);
             request.add("esr", et_esr.getText().toString());
-            request.add("cartonCount", et_carton_count.getText().toString());
+            if(spType!=null && spType.equals("Cartion")){
+                request.add("cartonCount", et_carton_count.getText().toString());
+            }
             if (palletId != null) {
                 request.add("palletId", palletId);
             }
@@ -824,10 +891,13 @@ public class StockInAddActivity extends BaseActivity {
             }
             request = new StringRequest(App.getMethod("/stockIn/addBox"), RequestMethod.POST);
             request.add("function",function);
-            request.add("type", sp_type.getSelectedItem().toString());
+            String spType = sp_type.getSelectedItem().toString();
+            request.add("type", spType);
             request.add("esr", et_esr.getText().toString());
             request.add("forward", sp_forward.getSelectedItem().toString());
-            request.add("cartonCount", et_carton_count.getText().toString());
+            if(spType!=null && spType.equals("Cartion")){
+                request.add("cartonCount", et_carton_count.getText().toString());
+            }
             if (palletId != null) {
                 request.add("palletId", palletId);
             }
@@ -1000,6 +1070,14 @@ public class StockInAddActivity extends BaseActivity {
                     TTSUtil.speak("error");
                     et_rma.setText(null);
                     et_rma.requestFocus();
+                    return;
+                }
+            }
+            if (editText.getId() == et_batch_no.getId()) {
+                if (!StrUtil.startWithAny(str, "PA", "RA", "RL", "RV")) {
+                    TTSUtil.speak("error");
+                    et_batch_no.setText(null);
+                    et_batch_no.requestFocus();
                     return;
                 }
             }
