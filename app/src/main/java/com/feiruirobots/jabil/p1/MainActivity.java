@@ -11,8 +11,15 @@ import android.os.Environment;
 import android.provider.Settings;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.feiruirobots.jabil.p1.model.ACTION;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -21,17 +28,26 @@ import butterknife.OnClick;
 public class MainActivity extends BaseActivity {
     @BindView(R.id.tv_version)
     TextView tv_version;
+    private static final int REQUIRED_CLICK_COUNT = 5;
+    private int clickCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        tv_version.setText("Version 1.30.6");
+        tv_version.setText("Version 1.31.1");
         tv_version.setOnClickListener(v -> {
             Uri uri = Uri.parse("http://10.121.196.47:11180/jabil/pda/download");
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
             startActivity(intent);
+        });
+        TextView tv_header_title = findViewById(R.id.tv_header_title);
+        tv_header_title.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                handleButtonClick();
+            }
         });
     }
 
@@ -66,5 +82,58 @@ public class MainActivity extends BaseActivity {
         dialog.setNegativeButton("Cancel", (dialog1, which) -> {
         });
         dialog.show();
+    }
+
+    private void handleButtonClick() {
+        clickCount++;
+
+        if (clickCount == REQUIRED_CLICK_COUNT) {
+            // 获取 logcat 日志
+            String logcat = getLogcat();
+
+            // 保存日志到文件
+            saveLogToFile(logcat);
+
+            // 重置点击次数
+            clickCount = 0;
+
+            // 提示用户
+            Toast.makeText(this, "Logcat saved to Download folder", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private String getLogcat() {
+        try {
+            Process process = Runtime.getRuntime().exec("logcat -d");
+            BufferedReader bufferedReader = new BufferedReader(
+                    new InputStreamReader(process.getInputStream()));
+
+            StringBuilder log = new StringBuilder();
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                log.append(line).append("\n");
+            }
+
+            return log.toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    private void saveLogToFile(String log) {
+        try {
+            File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+
+            File file = new File(dir, "logcat.txt");
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(log.getBytes());
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

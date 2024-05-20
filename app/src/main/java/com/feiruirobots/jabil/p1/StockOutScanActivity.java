@@ -228,11 +228,14 @@ public class StockOutScanActivity extends BaseActivity {
 
             @Override
             public void onFail(JSONObject object) {
-
+                TTSUtil.speak("fail");
+                ToastUtil.show(StockOutScanActivity.this,"retrieve box list fail");
             }
 
             @Override
             public void onError() {
+                TTSUtil.speak("error");
+                ToastUtil.show(StockOutScanActivity.this,"retrieve box list error");
 
             }
         });
@@ -266,12 +269,14 @@ public class StockOutScanActivity extends BaseActivity {
 
             @Override
             public void onFail(JSONObject object) {
-
+                TTSUtil.speak("fail");
+                ToastUtil.show(StockOutScanActivity.this,"scan box fail");
             }
 
             @Override
             public void onError() {
-
+                TTSUtil.speak("error");
+                ToastUtil.show(StockOutScanActivity.this,"scan box error");
             }
         });
     }

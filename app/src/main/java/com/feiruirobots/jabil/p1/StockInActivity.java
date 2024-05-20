@@ -21,6 +21,7 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.feiruirobots.jabil.p1.adapter.MyListAdapter;
 import com.feiruirobots.jabil.p1.common.TTSUtil;
+import com.feiruirobots.jabil.p1.common.ToastUtil;
 import com.feiruirobots.jabil.p1.http.CallServer;
 import com.feiruirobots.jabil.p1.http.HttpResponse;
 import com.feiruirobots.jabil.p1.model.BIZ_TASK_STATUS;
@@ -180,12 +181,14 @@ public class StockInActivity extends BaseActivity {
             @Override
             public void onFail(JSONObject object) {
                 Log.d(TAG,"onFail:"+object.toString());
-                TTSUtil.speak("task get failed");
+                TTSUtil.speak("fail");
+                ToastUtil.show(StockInActivity.this,"list get fail");
             }
 
             @Override
             public void onError() {
-                TTSUtil.speak("task get error");
+                TTSUtil.speak("error");
+                ToastUtil.show(StockInActivity.this,"list get error");
             }
         });
     }
@@ -227,8 +230,8 @@ public class StockInActivity extends BaseActivity {
             if (str.equals("") || str == null || (str.indexOf("\r") == -1 && str.indexOf("\n") == -1)) return;
             String newStr = str.replace("\r", "").replace("\n", "");
             editText.setText(newStr);
-            Log.d(TAG,"afterTextChanged:"+newStr);
-            if (!StrUtil.startWithAny(newStr, "PA134", "PV19", "PAG1", "PAS1", "PA", "PABD", "PA95", "PA124", "PA112", "PA193", "PA140", "PCT8", "PA104", "PFGT", "BL19")) {
+            if (!StrUtil.startWithAny(newStr, "PA134", "PV19", "PAG1", "PAS1", "PA", "PABD", "PA95", "PA124", "PA112", "PA193", "PA140", "PCT8", "PA104", "PFGT", "BL19") &&
+                    !StrUtil.startWithAny(str, "RA134", "RV19", "RAG1", "RAS1", "RA", "RA78", "RA95", "RA124", "RA112", "RA193", "RA140", "PA102", "RA104", "RA11", "RL19")) {
                 TTSUtil.speak("error");
                 et_box_id.setText(null);
                 et_box_id.requestFocus();
@@ -257,6 +260,12 @@ public class StockInActivity extends BaseActivity {
                 JSONArray boxsArray = dataObject.getJSONArray("boxs");
                 JSONObject palletObject = dataObject.getJSONObject("pallet");
                 existPallet =BizTask.parse(palletObject);
+                String terminal = existPallet.getTerminal();
+                if(terminal!=null && !terminal.equals("") && !terminal.equals("null")){
+                    ToastUtil.show(StockInActivity.this,"pallet had terminal");
+                    return;
+                }
+
                 existCartonList.clear();
 
                 for (Object o : boxsArray) {
@@ -270,13 +279,15 @@ public class StockInActivity extends BaseActivity {
             @Override
             public void onFail(JSONObject object) {
                 Log.d(TAG,"palletInfo onFail:"+object.toString());
-                TTSUtil.speak("task get failed");
+                TTSUtil.speak("fail");
+                ToastUtil.show(StockInActivity.this,"pallet info fail");
                 et_box_id.setText(null);
             }
 
             @Override
             public void onError() {
                 TTSUtil.speak("task get error");
+                ToastUtil.show(StockInActivity.this,"pallet info error");
             }
         });
     }

@@ -151,13 +151,15 @@ public class StockOutActivity extends BaseActivity {
 
             @Override
             public void onFail(JSONObject object) {
-                TTSUtil.speak("task get failed");
+                TTSUtil.speak("fail");
                 Log.d(TAG,"getBizTask onFail:"+object.toString());
+                ToastUtil.show(StockOutActivity.this,"retrieve list get fail");
             }
 
             @Override
             public void onError() {
-                TTSUtil.speak("task get error");
+                TTSUtil.speak("error");
+                ToastUtil.show(StockOutActivity.this,"retrieve list get error");
             }
         });
     }
