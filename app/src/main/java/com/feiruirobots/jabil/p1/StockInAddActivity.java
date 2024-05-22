@@ -4,6 +4,7 @@ import static com.feiruirobots.jabil.p1.StockInActivity.existCartonList;
 import static com.feiruirobots.jabil.p1.StockInActivity.existPallet;
 
 import android.app.AlertDialog;
+import android.app.job.JobInfo;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -109,6 +110,7 @@ public class StockInAddActivity extends BaseActivity {
     private String TAG = "hcy--StockInAddActivity";
     private String addType = "";
     private String binImageUrl = "";
+    private String esrType="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,10 +128,17 @@ public class StockInAddActivity extends BaseActivity {
             cartonList.clear();
             palletId = existPallet.getId();
             cartonList = existCartonList;
+
             String terminal = existPallet.getTerminal();
             Log.d(TAG,"terminal:"+terminal);
             if(terminal==null || terminal.equals("")){
                 et_terminal_in.setVisibility(View.VISIBLE);
+            }
+            if (StrUtil.equals(function, FUNCTION.RTV_RTC.value) || StrUtil.equals(function, FUNCTION.STAGING.value)) {
+                for(Carton carton : existCartonList){
+                    esrType = carton.getType();
+                    break;
+                }
             }
         }
         initView();
@@ -167,6 +176,15 @@ public class StockInAddActivity extends BaseActivity {
                 et_box_id.addTextChangedListener(new JumpTextWatcher(et_box_id, btn_add_box));
             }
             et_terminal_in.addTextChangedListener(new JumpTextWatcher(et_terminal_in, null));
+
+            if(addType.equals("Exist Packet")){
+                String binID = existPallet.getBinId();
+                if(binID==null || binID.equals("") || binID.equals("null")){
+                    cb_hub.setEnabled(true);
+                }else{
+                    cb_hub.setEnabled(false);      //存在binId，则不需要再进行勾选hub
+                }
+            }
         }
         if (StrUtil.equals(function, FUNCTION.SEMI_FG.value)) {
             sp_work_cell.setVisibility(View.VISIBLE);
@@ -186,6 +204,8 @@ public class StockInAddActivity extends BaseActivity {
                 et_box_id.addTextChangedListener(new JumpTextWatcher(et_box_id, btn_add_box));
             }
             et_terminal_in.addTextChangedListener(new JumpTextWatcher(et_terminal_in, null));
+
+
         }
         if (StrUtil.equals(function, FUNCTION.RAW_MATERIAL.value)) {
             et_reference_id.setVisibility(View.VISIBLE);
@@ -206,17 +226,37 @@ public class StockInAddActivity extends BaseActivity {
             et_esr.setVisibility(View.VISIBLE);
             et_carton_count.setVisibility(View.VISIBLE);
             et_esr.addTextChangedListener(new JumpTextWatcher(et_esr, btn_add_box));
+            et_terminal_in.addTextChangedListener(new JumpTextWatcher(et_terminal_in, null));
 
             sp_type.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                    if(i==0){
-                        et_carton_count.setVisibility(View.GONE);
-                        et_esr.addTextChangedListener(new JumpTextWatcher(et_esr, btn_add_box));
-                    }else {
-                        et_carton_count.setVisibility(View.VISIBLE);
-                        et_esr.addTextChangedListener(new JumpTextWatcher(et_esr, et_carton_count));
-                        et_carton_count.addTextChangedListener(new JumpTextWatcher(et_carton_count, btn_add_box));
+                    if(!esrType.equals("")){
+                        if(esrType.equals("Pallet")){
+                            sp_type.setSelection(0);
+                            et_carton_count.setVisibility(View.GONE);
+                            et_esr.addTextChangedListener(new JumpTextWatcher(et_esr, btn_add_box));
+                        }else if(esrType.equals("Cartion")){
+                            sp_type.setSelection(1);
+                            et_carton_count.setVisibility(View.VISIBLE);
+                            et_esr.addTextChangedListener(new JumpTextWatcher(et_esr, et_carton_count));
+                            et_carton_count.addTextChangedListener(new JumpTextWatcher(et_carton_count, btn_add_box));
+                        }
+                    }else{
+                        if(i==0){
+                            et_carton_count.setVisibility(View.GONE);
+                            et_esr.addTextChangedListener(new JumpTextWatcher(et_esr, btn_add_box));
+                            adapter =null;
+                            cartonList.clear();
+                            refreshListView();
+                        }else {
+                            et_carton_count.setVisibility(View.VISIBLE);
+                            et_esr.addTextChangedListener(new JumpTextWatcher(et_esr, et_carton_count));
+                            et_carton_count.addTextChangedListener(new JumpTextWatcher(et_carton_count, btn_add_box));
+                            adapter =null;
+                            cartonList.clear();
+                            refreshListView();
+                        }
                     }
                 }
 
@@ -232,6 +272,7 @@ public class StockInAddActivity extends BaseActivity {
             et_esr.setVisibility(View.VISIBLE);
             et_carton_count.setVisibility(View.VISIBLE);
             et_esr.addTextChangedListener(new JumpTextWatcher(et_esr, btn_add_box));
+            et_terminal_in.addTextChangedListener(new JumpTextWatcher(et_terminal_in, null));
 
             sp_type.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
@@ -293,14 +334,12 @@ public class StockInAddActivity extends BaseActivity {
             if(binID==null || binID.equals("") || binID.equals("null")){
                 btn_apply_bin.setVisibility(View.VISIBLE);
                 cb_special_pallet.setVisibility(View.VISIBLE);
-                cb_hub.setEnabled(true);
             }else{
                 btn_apply_bin.setVisibility(View.GONE);
                 cb_special_pallet.setVisibility(View.GONE);
                 tv_binid.setVisibility(View.VISIBLE);
                 img_barcode.setVisibility(View.VISIBLE);
                 tv_binid.setText(existPallet.getBinId());
-                cb_hub.setEnabled(false);      //存在binId，则不需要再进行勾选hub
                 //显示条行码
                 String imageUrl = App.getCodeBarUrl()+existPallet.getBinBarcodeUrlImg();
                 binImageUrl = imageUrl;
@@ -687,12 +726,24 @@ public class StockInAddActivity extends BaseActivity {
                     }
                     if (StrUtil.equals(function, FUNCTION.RTV_RTC.value)) {
                         holder.tv_t1.setText("ESR:" + data.getEsr());
-                        holder.tv_qty.setText("Q:" + data.getCartonCount());
+                        String spType = sp_type.getSelectedItem().toString();
+                        if(spType!=null && spType.equals("Pallet")){
+                            holder.tv_qty.setVisibility(View.GONE);
+                        }else{
+                            holder.tv_qty.setVisibility(View.VISIBLE);
+                            holder.tv_qty.setText("Q:" + data.getQty());
+                        }
                     }
                     if (StrUtil.equals(function, FUNCTION.STAGING.value)) {
                         holder.tv_t1.setText("ESR:" + data.getEsr());
                         holder.tv_t2.setText("FW:" + data.getForward());
-                        holder.tv_qty.setText("Q:" + data.getCartonCount());
+                        String spType = sp_type.getSelectedItem().toString();
+                        if(spType!=null && spType.equals("Pallet")){
+                            holder.tv_qty.setVisibility(View.GONE);
+                        }else{
+                            holder.tv_qty.setVisibility(View.VISIBLE);
+                            holder.tv_qty.setText("Q:" + data.getQty());
+                        }
                     }
                 }
             };
@@ -758,6 +809,7 @@ public class StockInAddActivity extends BaseActivity {
             });
             lv_carton.setAdapter(adapter);
         }
+
         adapter.setDataList(cartonList);
         adapter.notifyDataSetChanged();
 //        tv_box_count.setText(String.valueOf(cartonList.size()));
@@ -829,11 +881,9 @@ public class StockInAddActivity extends BaseActivity {
             }
         }
         if (StrUtil.equals(function, FUNCTION.RTV_RTC.value)) {
-            Log.d(TAG,"RTV_RTC");
             if (!ObjectUtil.isAllNotEmpty(et_esr.getText())) {
                 return;
             }
-            Log.d(TAG,"RTV_RTC--1");
             request = new StringRequest(App.getMethod("/stockIn/addBox"), RequestMethod.POST);
             request.add("function",function);
             String spType = sp_type.getSelectedItem().toString();
@@ -899,7 +949,7 @@ public class StockInAddActivity extends BaseActivity {
             @Override
             public void onError() {
                 TTSUtil.speak("Error");
-                ToastUtil.show(StockInAddActivity.this,"box delete error");
+                ToastUtil.show(StockInAddActivity.this,"box boxid error");
             }
         });
     }
@@ -914,6 +964,7 @@ public class StockInAddActivity extends BaseActivity {
                 Log.d(TAG,"palletId:"+palletId);
                 Log.d(TAG,"terminal:"+terminal);
                 request.add("palletId", palletId);
+                request.add("firstFloor", cb_special_pallet.isChecked() ? 1 : 0);
                 request.add("terminal", terminal);
             }
         }
@@ -925,34 +976,41 @@ public class StockInAddActivity extends BaseActivity {
                 Log.d(TAG,"palletId:"+palletId);
                 Log.d(TAG,"terminal:"+terminal);
                 request.add("palletId", palletId);
+                request.add("firstFloor", cb_special_pallet.isChecked() ? 1 : 0);
                 request.add("terminal", terminal);
             }
         }
         if (StrUtil.equals(function, FUNCTION.RAW_MATERIAL.value)) {
-            String terminal = et_terminal.getText().toString();
-            if (ObjectUtil.isAllNotEmpty(terminal, palletId)) {
-                request = new StringRequest(App.getMethod("/stockIn/addRawMaterialSubmit"), RequestMethod.POST);
+            String terminal = et_terminal_in.getText().toString();
+//            if (ObjectUtil.isAllNotEmpty(terminal, palletId)) {
+            if (palletId!=null) {
+                request = new StringRequest(App.getMethod("/stockIn/addTerminalIn"), RequestMethod.POST);
                 request.add("palletId", palletId);
                 request.add("firstFloor", cb_special_pallet.isChecked() ? 1 : 0);
-                request.set("terminal", et_terminal.getText().toString());
+//                request.set("terminal", et_terminal.getText().toString());
+                request.add("terminal", terminal);
             }
         }
         if (StrUtil.equals(function, FUNCTION.RTV_RTC.value)) {
-            String terminal = et_terminal.getText().toString();
-            if (ObjectUtil.isAllNotEmpty(terminal, palletId)) {
-                request = new StringRequest(App.getMethod("/stockIn/addRtcSubmit"), RequestMethod.POST);
+            String terminal = et_terminal_in.getText().toString();
+//            if (ObjectUtil.isAllNotEmpty(terminal, palletId)) {
+            if (palletId!=null) {
+                request = new StringRequest(App.getMethod("/stockIn/addTerminalIn"), RequestMethod.POST);
                 request.add("palletId", palletId);
                 request.add("firstFloor", cb_special_pallet.isChecked() ? 1 : 0);
-                request.set("terminal", et_terminal.getText().toString());
+//                request.set("terminal", et_terminal.getText().toString());
+                request.add("terminal", terminal);
             }
         }
         if (StrUtil.equals(function, FUNCTION.STAGING.value)) {
-            String terminal = et_terminal.getText().toString();
-            if (ObjectUtil.isAllNotEmpty(terminal, palletId)) {
-                request = new StringRequest(App.getMethod("/stockIn/addStagingSubmit"), RequestMethod.POST);
+            String terminal = et_terminal_in.getText().toString();
+//            if (ObjectUtil.isAllNotEmpty(terminal, palletId)) {
+            if (palletId!=null) {
+                request = new StringRequest(App.getMethod("/stockIn/addTerminalIn"), RequestMethod.POST);
                 request.add("palletId", palletId);
                 request.add("firstFloor", cb_special_pallet.isChecked() ? 1 : 0);
-                request.set("terminal", et_terminal.getText().toString());
+                request.add("terminal", terminal);
+//                request.set("terminal", et_terminal.getText().toString());
             }
         }
         if (request == null) {

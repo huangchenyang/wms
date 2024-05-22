@@ -82,6 +82,13 @@ public class StockInActivity extends BaseActivity {
         initListView();
         getBizTask();
         handlerSend.sendEmptyMessageDelayed(1, 1000);
+        initView();
+    }
+
+    private void initView(){
+        if(StrUtil.equals(function, FUNCTION.RTV_RTC.value) || StrUtil.equals(function, FUNCTION.STAGING.value)){
+            et_box_id.setHint("ESR");
+        }
         et_box_id.addTextChangedListener(new StockInActivity.JumpTextWatcher(et_box_id));
     }
 
@@ -230,13 +237,17 @@ public class StockInActivity extends BaseActivity {
             if (str.equals("") || str == null || (str.indexOf("\r") == -1 && str.indexOf("\n") == -1)) return;
             String newStr = str.replace("\r", "").replace("\n", "");
             editText.setText(newStr);
-            if (!StrUtil.startWithAny(newStr, "PA134", "PV19", "PAG1", "PAS1", "PA", "PABD", "PA95", "PA124", "PA112", "PA193", "PA140", "PCT8", "PA104", "PFGT", "BL19") &&
-                    !StrUtil.startWithAny(str, "RA134", "RV19", "RAG1", "RAS1", "RA", "RA78", "RA95", "RA124", "RA112", "RA193", "RA140", "PA102", "RA104", "RA11", "RL19")) {
-                TTSUtil.speak("error");
-                et_box_id.setText(null);
-                et_box_id.requestFocus();
-                Toast.makeText(StockInActivity.this, "invalid BoxID", Toast.LENGTH_SHORT).show();
-                return;
+            if(StrUtil.equals(function, FUNCTION.RTV_RTC.value) || StrUtil.equals(function, FUNCTION.STAGING.value)){
+
+            }else{
+                if (!StrUtil.startWithAny(newStr, "PA134", "PV19", "PAG1", "PAS1", "PA", "PABD", "PA95", "PA124", "PA112", "PA193", "PA140", "PCT8", "PA104", "PFGT", "BL19") &&
+                        !StrUtil.startWithAny(str, "RA134", "RV19", "RAG1", "RAS1", "RA", "RA78", "RA95", "RA124", "RA112", "RA193", "RA140", "PA102", "RA104", "RA11", "RL19")) {
+                    TTSUtil.speak("error");
+                    et_box_id.setText(null);
+                    et_box_id.requestFocus();
+                    Toast.makeText(StockInActivity.this, "invalid BoxID", Toast.LENGTH_SHORT).show();
+                    return;
+                }
             }
             getPalletInfo(newStr);
         }
@@ -246,6 +257,7 @@ public class StockInActivity extends BaseActivity {
         String url = App.getMethod("/stockIn/palletInfo?function=" + function);
         StringRequest request = new StringRequest(url, RequestMethod.POST);
         request.add("id", boxid);
+
         CallServer.getInstance().add(0, request, new HttpResponse(StockInActivity.this) {
             @Override
             public void onStart(int what) {

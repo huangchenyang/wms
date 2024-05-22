@@ -7,4 +7,8 @@
         <item>Carton</item>
         <item>Pallet</item>
     </string-array>
+    <string-array name="retrieve">
+    <item>RetrieveList</item>
+    <item>RetrieveStart</item>
+    </string-array>
 </resources>
