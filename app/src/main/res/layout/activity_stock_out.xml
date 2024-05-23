@@ -58,11 +58,11 @@
         android:hint="Reference"
         android:paddingLeft="10dp" />
 
-    <Spinner
-        android:id="@+id/spRetrieve"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:entries="@array/retrieve"/>
+<!--    <Spinner-->
+<!--        android:id="@+id/spRetrieve"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:entries="@array/retrieve"/>-->
 
     <ListView
         android:id="@+id/lv_biz_task"

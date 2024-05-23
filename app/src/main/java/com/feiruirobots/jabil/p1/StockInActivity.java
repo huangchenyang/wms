@@ -28,6 +28,7 @@ import com.feiruirobots.jabil.p1.model.BIZ_TASK_STATUS;
 import com.feiruirobots.jabil.p1.model.BizTask;
 import com.feiruirobots.jabil.p1.model.Carton;
 import com.feiruirobots.jabil.p1.model.FUNCTION;
+import com.feiruirobots.jabil.p1.model.ListJson;
 import com.yanzhenjie.nohttp.RequestMethod;
 import com.yanzhenjie.nohttp.rest.OnResponseListener;
 import com.yanzhenjie.nohttp.rest.Response;
@@ -49,6 +50,7 @@ public class StockInActivity extends BaseActivity {
     private String function;
     private MyListAdapter adapter;
     private List<BizTask> bizTaskList = new ArrayList<>();
+    private List<ListJson> listJsons = new ArrayList<>();
     public static BizTask existPallet= new BizTask();
     public static List<Carton> existCartonList = new ArrayList<>();
 
@@ -65,7 +67,7 @@ public class StockInActivity extends BaseActivity {
             // 重写handleMessage方法
             super.handleMessage(msg);
             if (msg.what == 1) {
-                getBizTask();
+                getListTask();
                 handlerSend.sendEmptyMessageDelayed(1, 1000);
             }
         }
@@ -80,7 +82,7 @@ public class StockInActivity extends BaseActivity {
         function = intent.getStringExtra("FUNCTION");
         initTitle("Stock In->"+ Objects.requireNonNull(FUNCTION.of(function)).msg);
         initListView();
-        getBizTask();
+        getListTask();
         handlerSend.sendEmptyMessageDelayed(1, 1000);
         initView();
     }
@@ -117,7 +119,7 @@ public class StockInActivity extends BaseActivity {
     }
 
     private void initListView() {
-        adapter = new MyListAdapter<BizTaskView, BizTask>(StockInActivity.this, bizTaskList, R.layout.item_task_biz) {
+        adapter = new MyListAdapter<BizTaskView, ListJson>(StockInActivity.this, listJsons, R.layout.item_task_biz) {
             @Override
             public BizTaskView initView(View convertView, BizTaskView holder) {
                 if (holder == null) holder = new BizTaskView();
@@ -130,7 +132,7 @@ public class StockInActivity extends BaseActivity {
             }
 
             @Override
-            public void initContent(BizTaskView holder, final BizTask data) {
+            public void initContent(BizTaskView holder, final ListJson data) {
 //                StringBuilder stringBuilder = new StringBuilder();
 //                stringBuilder.append(data.getFromId());
 //                if (StrUtil.isNotBlank(data.getBufferId())) {
@@ -162,7 +164,7 @@ public class StockInActivity extends BaseActivity {
         lv_biz_task.setAdapter(adapter);
     }
 
-    private void getBizTask() {
+    private void getListTask() {
         String url = App.getMethod("/stockIn/list?function=" + function);
         StringRequest request = new StringRequest(url, RequestMethod.POST);
         CallServer.getInstance().add(0, request, new HttpResponse(StockInActivity.this) {
@@ -174,13 +176,13 @@ public class StockInActivity extends BaseActivity {
             @Override
             public void onOK(JSONObject json) {
                 Log.d(TAG,"onOK:"+json.toString());
-                bizTaskList.clear();
+                listJsons.clear();
                 JSONArray arrays = json.getJSONArray("data");
                 for (Object array : arrays) {
 //                    Log.d(TAG,"array:"+array.toString());
                     JSONObject jsonObject = (JSONObject) array;
-                    BizTask bizTask =BizTask.parse(jsonObject);
-                    bizTaskList.add(bizTask);
+                    ListJson listJson =ListJson.parse(jsonObject);
+                    listJsons.add(listJson);
                 }
                 adapter.notifyDataSetChanged();
             }
@@ -202,7 +204,7 @@ public class StockInActivity extends BaseActivity {
 
     @Override
     protected void onResume() {
-        getBizTask();
+        getListTask();
         super.onResume();
     }
 

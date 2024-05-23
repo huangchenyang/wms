@@ -1,5 +1,7 @@
 package com.feiruirobots.jabil.p1;
 
+import static com.feiruirobots.jabil.p1.StockOutActivity.allList;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -54,7 +56,7 @@ public class StockOutScanActivity extends BaseActivity {
 //    private MyListAdapter<CartonView, Carton> outAdapter;
     private MyListAdapter<CartonView, BillData> allAdapter;
 //    private List<Carton> outList = new ArrayList<>();
-    private List<BillData> allList = new ArrayList<>();
+//    private List<BillData> allList = new ArrayList<>();
     private String TAG="hcy--StockOutScanActivity";
 
     @Override
@@ -72,7 +74,7 @@ public class StockOutScanActivity extends BaseActivity {
 //        getOutScan(null);
 //        ScanOutListView();
         AllListView();
-        getAll();
+//        getAll();
     }
 
     class CartonView {
@@ -196,8 +198,10 @@ public class StockOutScanActivity extends BaseActivity {
                         holder.tv_t2.setText("BinID: " + data.getFromStation());
                         holder.tv_t3.setText("BoxID: " + data.getBoxId());
                         if(data.getStatus().equals("0")){
-                            holder.tv_finish.setText("✔");
+                            holder.tv_finish.setText("");
                         }else if(data.getStatus().equals("1")){
+                            holder.tv_finish.setText("✔");
+                        }else if(data.getStatus().equals("6")){
                             holder.tv_finish.setText("✔✔");
                         }
                     }
@@ -257,7 +261,7 @@ public class StockOutScanActivity extends BaseActivity {
                     JSONObject jsonObject = (JSONObject) array;
                     BillData billData = BillData.parse(jsonObject);
                     allList.add(billData);
-                    if(billData.getStatus().equals("0")){
+                    if(billData.getStatus().equals("0") || billData.getStatus().equals("1")){
                         isFinish = false;
                     }
                 }
@@ -269,6 +273,7 @@ public class StockOutScanActivity extends BaseActivity {
 
             @Override
             public void onFail(JSONObject object) {
+                Log.d(TAG,"scan box fail:"+object.toString());
                 TTSUtil.speak("fail");
                 ToastUtil.show(StockOutScanActivity.this,"scan box fail");
             }

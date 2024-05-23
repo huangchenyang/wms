@@ -27,7 +27,6 @@ public class BizTask {
 
     public static BizTask parse(JSONObject jsonObject) {
         BizTask bizTask = new BizTask();
-        int box_count = jsonObject.getInteger("box_count");
         bizTask.setId(jsonObject.getInteger("id"));
         bizTask.setBoxCount(jsonObject.getInteger("box_count"));
         bizTask.setPartQty(jsonObject.getInteger("part_qty"));

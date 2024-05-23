@@ -29,6 +29,7 @@ import com.feiruirobots.jabil.p1.model.BIZ_TASK_STATUS;
 import com.feiruirobots.jabil.p1.model.BillData;
 import com.feiruirobots.jabil.p1.model.BizTask;
 import com.feiruirobots.jabil.p1.model.FUNCTION;
+import com.feiruirobots.jabil.p1.model.RetrieveListJson;
 import com.yanzhenjie.nohttp.RequestMethod;
 import com.yanzhenjie.nohttp.rest.OnResponseListener;
 import com.yanzhenjie.nohttp.rest.Response;
@@ -46,11 +47,12 @@ import cn.hutool.core.util.StrUtil;
 
 public class StockOutActivity extends BaseActivity {
     private String function;
-    private MyListAdapter<BizTaskView, BillData> adapter;
-    private List<BillData> bizTaskList = new ArrayList<>();
+    private MyListAdapter<BizTaskView, RetrieveListJson> adapter;
+    private List<RetrieveListJson> retrieveList = new ArrayList<>();
+    public static List<BillData> allList = new ArrayList<>();
     private String TAG = "hcy--StockOutActivity";
-    private Spinner spRetrieve;
-    private boolean isRetrieveStart = false;
+//    private Spinner spRetrieve;
+//    private boolean isRetrieveStart = false;
 
     @BindView(R.id.lv_biz_task)
     ListView lv_biz_task;
@@ -63,7 +65,7 @@ public class StockOutActivity extends BaseActivity {
             // 重写handleMessage方法
             super.handleMessage(msg);
             if (msg.what == 1) {
-                getBizTask();
+                getRetrieveList();
                 handlerSend.sendEmptyMessageDelayed(1, 1000);
             }
         }
@@ -80,23 +82,23 @@ public class StockOutActivity extends BaseActivity {
         initListView();
         handlerSend.sendEmptyMessageDelayed(1, 1000);
         et_perference.addTextChangedListener(new StockOutActivity.JumpTextWatcher(et_perference));
-        getBizTask();
-        spRetrieve = findViewById(R.id.spRetrieve);
-        spRetrieve.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if(i==0){
-                    isRetrieveStart = false;
-                }else if(i==1){
-                    isRetrieveStart = true;
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
+        getRetrieveList();
+//        spRetrieve = findViewById(R.id.spRetrieve);
+//        spRetrieve.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+//                if(i==0){
+//                    isRetrieveStart = false;
+//                }else if(i==1){
+//                    isRetrieveStart = true;
+//                }
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> adapterView) {
+//
+//            }
+//        });
     }
 
     @Override
@@ -111,7 +113,7 @@ public class StockOutActivity extends BaseActivity {
     }
 
     private void initListView() {
-        adapter = new MyListAdapter<BizTaskView, BillData>(this, bizTaskList, R.layout.item_task_biz) {
+        adapter = new MyListAdapter<BizTaskView, RetrieveListJson>(this, retrieveList, R.layout.item_task_biz) {
             @Override
             public BizTaskView initView(View convertView, BizTaskView holder) {
                 if (holder == null) holder = new BizTaskView();
@@ -124,12 +126,14 @@ public class StockOutActivity extends BaseActivity {
             }
 
             @Override
-            public void initContent(BizTaskView holder, final BillData data) {
+            public void initContent(BizTaskView holder, final RetrieveListJson data) {
                 holder.tv_pallet_id.setText("RF: "+data.getBillNo());
-                holder.tv_fgtf.setText("WC: "+data.getWorkCell());
-                holder.tv_binid.setText("BinID: "+data.getFromStation());
-                holder.tv_box_count.setVisibility(View.GONE);
-                holder.tv_terminal_in.setVisibility(View.GONE);
+                holder.tv_fgtf.setText("PS: "+data.getPalletStatus());
+                holder.tv_binid.setText("BinID: "+data.getBinId());
+//                holder.tv_box_count.setVisibility(View.GONE);
+//                holder.tv_terminal_in.setVisibility(View.GONE);
+                holder.tv_box_count.setText("BC: "+data.getBillBoxCount() + "/"+data.getBoxCount());
+                holder.tv_terminal_in.setText("TIN: "+data.getTerminal());
             }
         };
         lv_biz_task.setOnItemClickListener((parent, view, position, id) -> {
@@ -149,22 +153,23 @@ public class StockOutActivity extends BaseActivity {
         lv_biz_task.setAdapter(adapter);
     }
 
-    private void getBizTask() {
+    private void getRetrieveList() {
         String url = App.getMethod("/retrive/retrieveList?function=" + function);
         StringRequest request = new StringRequest(url, RequestMethod.POST);
         CallServer.getInstance().add(0, request, new HttpResponse(StockOutActivity.this) {
             @Override
             public void onOK(JSONObject json) {
-                Log.d(TAG,"getBizTask onOK:"+json.toString());
-                bizTaskList.clear();
+                Log.d(TAG,"getRetrieveList onOK:"+json.toString());
+                retrieveList.clear();
                 JSONArray arrays = json.getJSONArray("data");
                 for (Object array : arrays) {
                     JSONObject jsonObject = (JSONObject) array;
-                    if(!jsonObject.getString("status").equals("1")){
-                        bizTaskList.add(BillData.parse(jsonObject));
-                    }else{
-                        Log.d(TAG,"had retrieve billNo");
-                    }
+                    retrieveList.add(RetrieveListJson.parse(jsonObject));
+//                    if(!jsonObject.getString("status").equals("1")){
+//                        retrieveList.add(RetrieveListJson.parse(jsonObject));
+//                    }else{
+//                        Log.d(TAG,"had retrieve billNo");
+//                    }
                 }
                 adapter.notifyDataSetChanged();
             }
@@ -211,6 +216,50 @@ public class StockOutActivity extends BaseActivity {
         });
     }
 
+    private void getRetrieveBoxList(String billId) {
+        StringRequest request = new StringRequest(App.getMethod("/retrive/retrieveBoxList"), RequestMethod.POST);
+        request.add("billId", billId);
+        CallServer.getInstance().add(0, request, new HttpResponse(StockOutActivity.this) {
+            @Override
+            public void onOK(JSONObject object) {
+                allList.clear();
+                Log.d(TAG,"getRetrieveBoxList onOK:"+object.toString());
+                JSONObject data = object.getJSONObject("data");
+                String interface_status = data.getString("interface_status");
+                Log.d(TAG,"interface_status:"+interface_status.toString());
+                if(interface_status.equals("start")){
+                    Log.d(TAG,"start reference");
+                    Toast.makeText(StockOutActivity.this, "start reference ok", Toast.LENGTH_SHORT).show();
+                }else if(interface_status.equals("list")){
+                    Log.d(TAG,"get list");
+                    JSONArray arrays = data.getJSONArray("data");
+                    for (Object array : arrays) {
+                        JSONObject jsonObject = (JSONObject) array;
+                        BillData billData = BillData.parse(jsonObject);
+                        allList.add(billData);
+                    }
+                    Intent intent = new Intent(StockOutActivity.this, StockOutScanActivity.class);
+                    intent.putExtra("FUNCTION", function);
+                    intent.putExtra("BizTaskId", billId);
+                    startActivity(intent);
+                }
+            }
+
+            @Override
+            public void onFail(JSONObject object) {
+                TTSUtil.speak("fail");
+                ToastUtil.show(StockOutActivity.this,"retrieve box list fail");
+            }
+
+            @Override
+            public void onError() {
+                TTSUtil.speak("error");
+                ToastUtil.show(StockOutActivity.this,"retrieve box list error");
+
+            }
+        });
+    }
+
     private class JumpTextWatcher implements TextWatcher {
         private EditText editText;
 
@@ -236,22 +285,23 @@ public class StockOutActivity extends BaseActivity {
             if (str.equals("") || str == null || (str.indexOf("\r") == -1 && str.indexOf("\n") == -1)) return;
             editText.setText(str.replace("\r", "").replace("\n", ""));
             Log.d(TAG,"afterTextChanged:"+str);
-            if(isRetrieveStart){
-                startRetrieve(editText.getText().toString());
-            }else{
-                for (BillData billData:bizTaskList){
-                    Log.d(TAG,"getBillNo:"+billData.getBillNo());
-                    if(billData.getBillNo().equals(editText.getText().toString())){
-                        Log.d(TAG,"start StockOutScanActivity");
-                        et_perference.setText("");
-                        Intent intent = new Intent(StockOutActivity.this, StockOutScanActivity.class);
-                        intent.putExtra("FUNCTION", function);
-                        intent.putExtra("BizTaskId", billData.getBillNo());
-                        startActivity(intent);
-                        break;
-                    }
-                }
-            }
+//            if(isRetrieveStart){
+//                startRetrieve(editText.getText().toString());
+//            }else{
+            getRetrieveBoxList(editText.getText().toString());
+//                for (BillData billData:bizTaskList){
+//                    Log.d(TAG,"getBillNo:"+billData.getBillNo());
+//                    if(billData.getBillNo().equals(editText.getText().toString())){
+//                        Log.d(TAG,"start StockOutScanActivity");
+//                        et_perference.setText("");
+//                        Intent intent = new Intent(StockOutActivity.this, StockOutScanActivity.class);
+//                        intent.putExtra("FUNCTION", function);
+//                        intent.putExtra("BizTaskId", billData.getBillNo());
+//                        startActivity(intent);
+//                        break;
+//                    }
+//                }
+//            }
         }
     }
 }
