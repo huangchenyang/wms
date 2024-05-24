@@ -191,7 +191,7 @@ public class StockInActivity extends BaseActivity {
             public void onFail(JSONObject object) {
                 Log.d(TAG,"onFail:"+object.toString());
                 TTSUtil.speak("fail");
-                ToastUtil.show(StockInActivity.this,"list get fail");
+                ToastUtil.show(StockInActivity.this,"list get fail "+object.toString());
             }
 
             @Override
@@ -294,7 +294,7 @@ public class StockInActivity extends BaseActivity {
             public void onFail(JSONObject object) {
                 Log.d(TAG,"palletInfo onFail:"+object.toString());
                 TTSUtil.speak("fail");
-                ToastUtil.show(StockInActivity.this,"pallet info fail");
+                ToastUtil.show(StockInActivity.this,"pallet info fail "+object.toString());
                 et_box_id.setText(null);
             }
 

@@ -23,7 +23,7 @@ public class BillData {
     private String workCell;
     private String partNo;
     private Date inTime;
-
+    private String terminal;
 
     private static String TAG="hcy--BillData";
 
@@ -47,6 +47,8 @@ public class BillData {
         billData.setPartNo(jsonObject.getString("part_no"));
         billData.setWorkCell(jsonObject.getString("work_cell"));
         billData.setFunction(jsonObject.getString("function"));
+        billData.setTerminal(jsonObject.getString("terminal"));
+
         return billData;
     }
 
@@ -180,6 +182,11 @@ public class BillData {
         this.partNo = partNo;
     }
 
+    public String getTerminal() {
+        return terminal;
+    }
 
-
+    public void setTerminal(String terminal) {
+        this.terminal = terminal;
+    }
 }

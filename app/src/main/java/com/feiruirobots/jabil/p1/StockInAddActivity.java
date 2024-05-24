@@ -409,7 +409,7 @@ public class StockInAddActivity extends BaseActivity {
             public void onFailed(int what, Response response) {
                 Log.d(TAG,"forward onFailed:"+response.toString());
                 TTSUtil.speak("fail");
-                ToastUtil.show(StockInAddActivity.this,"forward init fail");
+                ToastUtil.show(StockInAddActivity.this,"forward init fail "+response.toString());
             }
 
             @Override
@@ -452,7 +452,7 @@ public class StockInAddActivity extends BaseActivity {
             public void onFailed(int what, Response response) {
                 Log.d(TAG,"workCell onSucceed:"+response.toString());
                 TTSUtil.speak("fail");
-                ToastUtil.show(StockInAddActivity.this,"workCell init fail");
+                ToastUtil.show(StockInAddActivity.this,"workCell init fail "+response.toString());
             }
 
             @Override
@@ -570,7 +570,7 @@ public class StockInAddActivity extends BaseActivity {
                     cb_hub.setEnabled(true);
                 }
                 TTSUtil.speak("fail");
-                ToastUtil.show(StockInAddActivity.this,"pallet add fail");
+                ToastUtil.show(StockInAddActivity.this,"pallet add fail "+object.toString());
             }
 
             @Override
@@ -659,7 +659,7 @@ public class StockInAddActivity extends BaseActivity {
             public void onFail(JSONObject object) {
                 Log.d(TAG,"palletDelete onFail:"+object.toString());
                 TTSUtil.speak("fail");
-                ToastUtil.show(StockInAddActivity.this,"pallet delete fail");
+                ToastUtil.show(StockInAddActivity.this,"pallet delete fail "+object.toString());
             }
 
             @Override
@@ -791,7 +791,7 @@ public class StockInAddActivity extends BaseActivity {
                         public void onFail(JSONObject object) {
                             Log.d(TAG,"deleteBox onFail:"+object.toString());
                             TTSUtil.speak("fail");
-                            ToastUtil.show(StockInAddActivity.this,"box delete fail");
+                            ToastUtil.show(StockInAddActivity.this,"box delete fail "+object.toString());
                         }
 
                         @Override
@@ -942,7 +942,7 @@ public class StockInAddActivity extends BaseActivity {
             public void onFail(JSONObject object) {
                 Log.d(TAG,"add boxid onFail:"+object.toString());
                 TTSUtil.speak("fail");
-                ToastUtil.show(StockInAddActivity.this,"box add fail");
+                ToastUtil.show(StockInAddActivity.this,"box add fail "+object.toString());
                 reset();
             }
 
@@ -1036,7 +1036,7 @@ public class StockInAddActivity extends BaseActivity {
             public void onFail(JSONObject object) {
                 Log.d(TAG,"terminalInAdd onFail:"+object.toString());
                 TTSUtil.speak("terminal in add fail");
-                ToastUtil.show(StockInAddActivity.this, "Terminal in fail!");
+                ToastUtil.show(StockInAddActivity.this, "Terminal in fail! "+object.toString());
                 et_terminal_in.setText("");
                 et_terminal_in.requestFocus();
             }
@@ -1114,14 +1114,14 @@ public class StockInAddActivity extends BaseActivity {
                 if (!cb_batch_no.isChecked() && !StrUtil.startWithAny(str, "PA134", "PV19", "PAG1", "PAS1", "PA", "PABD", "PA95", "PA124", "PA112", "PA193", "PA140", "PCT8", "PA104", "PFGT", "BL19")) {
                     TTSUtil.speak("error");
                     ToastUtil.show(StockInAddActivity.this,"invalid box id");
-                    et_box_id.setText(null);
+//                    et_box_id.setText(null);
                     et_box_id.requestFocus();
                     return;
                 }
                 if (cb_batch_no.isChecked() && !StrUtil.startWithAny(str, "RA134", "RV19", "RAG1", "RAS1", "RA", "RA78", "RA95", "RA124", "RA112", "RA193", "RA140", "PA102", "RA104", "RA11", "RL19")) {
                     TTSUtil.speak("error");
                     ToastUtil.show(StockInAddActivity.this,"invalid box id");
-                    et_box_id.setText(null);
+//                    et_box_id.setText(null);
                     et_box_id.requestFocus();
                     return;
                 }

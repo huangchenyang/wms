@@ -178,7 +178,7 @@ public class StockOutActivity extends BaseActivity {
             public void onFail(JSONObject object) {
                 TTSUtil.speak("fail");
                 Log.d(TAG,"getBizTask onFail:"+object.toString());
-                ToastUtil.show(StockOutActivity.this,"retrieve list get fail");
+                ToastUtil.show(StockOutActivity.this,"retrieve list get fail "+object.toString());
             }
 
             @Override
@@ -203,7 +203,7 @@ public class StockOutActivity extends BaseActivity {
             @Override
             public void onFail(JSONObject object) {
                 TTSUtil.speak("fail");
-                ToastUtil.show(StockOutActivity.this,billId + " start fail");
+                ToastUtil.show(StockOutActivity.this,billId + " start fail "+object.toString());
                 et_perference.setText(null);
             }
 
@@ -217,7 +217,7 @@ public class StockOutActivity extends BaseActivity {
     }
 
     private void getRetrieveBoxList(String billId) {
-        StringRequest request = new StringRequest(App.getMethod("/retrive/retrieveBoxList"), RequestMethod.POST);
+        StringRequest request = new StringRequest(App.getMethod("/retrive/retrieveBoxList?function=" + function), RequestMethod.POST);
         request.add("billId", billId);
         CallServer.getInstance().add(0, request, new HttpResponse(StockOutActivity.this) {
             @Override
@@ -243,19 +243,21 @@ public class StockOutActivity extends BaseActivity {
                     intent.putExtra("BizTaskId", billId);
                     startActivity(intent);
                 }
+                et_perference.setText(null);
             }
 
             @Override
             public void onFail(JSONObject object) {
                 TTSUtil.speak("fail");
-                ToastUtil.show(StockOutActivity.this,"retrieve box list fail");
+                ToastUtil.show(StockOutActivity.this,"retrieve box list fail " +object.toString());
+                et_perference.setText(null);
             }
 
             @Override
             public void onError() {
                 TTSUtil.speak("error");
                 ToastUtil.show(StockOutActivity.this,"retrieve box list error");
-
+                et_perference.setText(null);
             }
         });
     }

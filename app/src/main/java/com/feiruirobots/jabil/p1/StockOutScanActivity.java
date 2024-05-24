@@ -5,6 +5,7 @@ import static com.feiruirobots.jabil.p1.StockOutActivity.allList;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -75,6 +76,9 @@ public class StockOutScanActivity extends BaseActivity {
 //        ScanOutListView();
         AllListView();
 //        getAll();
+        if(StrUtil.equals(function, FUNCTION.RTV_RTC.value) || StrUtil.equals(function, FUNCTION.STAGING.value)){
+            et_scan_text.setHint("ESR");
+        }
     }
 
     class CartonView {
@@ -166,12 +170,14 @@ public class StockOutScanActivity extends BaseActivity {
                     holder.tv_t2 = convertView.findViewById(R.id.tv_t2);
                     holder.tv_t1 = convertView.findViewById(R.id.tv_t1);
                     holder.tv_qty = convertView.findViewById(R.id.tv_qty);
+                    holder.tv_qty.setTextColor(Color.BLACK);
+                    holder.tv_qty.setTextSize(14);
                     holder.tv_finish = convertView.findViewById(R.id.tv_finish);
                     if (StrUtil.equals(function, FUNCTION.FINISHED_GOODS.value) || StrUtil.equals(function, FUNCTION.SEMI_FG.value)) {
                         holder.tv_t1.setVisibility(View.VISIBLE);
                         holder.tv_t2.setVisibility(View.VISIBLE);
                         holder.tv_t3.setVisibility(View.VISIBLE);
-                        holder.tv_qty.setVisibility(View.GONE);
+                        holder.tv_qty.setVisibility(View.VISIBLE);
                         holder.tv_finish.setVisibility(View.VISIBLE);
                     }
                     if (StrUtil.equals(function, FUNCTION.RAW_MATERIAL.value)) {
@@ -180,13 +186,17 @@ public class StockOutScanActivity extends BaseActivity {
                     }
                     if (StrUtil.equals(function, FUNCTION.RTV_RTC.value)) {
                         holder.tv_t1.setVisibility(View.VISIBLE);
-                        holder.tv_t2.setVisibility(View.GONE);
+                        holder.tv_t2.setVisibility(View.VISIBLE);
+                        holder.tv_t3.setVisibility(View.VISIBLE);
                         holder.tv_qty.setVisibility(View.VISIBLE);
+                        holder.tv_finish.setVisibility(View.VISIBLE);
                     }
                     if (StrUtil.equals(function, FUNCTION.STAGING.value)) {
                         holder.tv_t1.setVisibility(View.VISIBLE);
-                        holder.tv_t2.setVisibility(View.GONE);
+                        holder.tv_t2.setVisibility(View.VISIBLE);
+                        holder.tv_t3.setVisibility(View.VISIBLE);
                         holder.tv_qty.setVisibility(View.VISIBLE);
+                        holder.tv_finish.setVisibility(View.VISIBLE);
                     }
                     return holder;
                 }
@@ -204,6 +214,19 @@ public class StockOutScanActivity extends BaseActivity {
                         }else if(data.getStatus().equals("6")){
                             holder.tv_finish.setText("✔✔");
                         }
+                        holder.tv_qty.setText("TIN: " + data.getTerminal());
+                    }else if(StrUtil.equals(function, FUNCTION.RTV_RTC.value) || StrUtil.equals(function, FUNCTION.STAGING.value)){
+                        holder.tv_t1.setText("RF: " + data.getBillNo());
+                        holder.tv_t2.setText("BinID: " + data.getFromStation());
+                        holder.tv_t3.setText("ESR: " + data.getEsr());
+                        if(data.getStatus().equals("0")){
+                            holder.tv_finish.setText("");
+                        }else if(data.getStatus().equals("1")){
+                            holder.tv_finish.setText("✔");
+                        }else if(data.getStatus().equals("6")){
+                            holder.tv_finish.setText("✔✔");
+                        }
+                        holder.tv_qty.setText("TIN: " + data.getTerminal());
                     }
                 }
             };
@@ -233,7 +256,7 @@ public class StockOutScanActivity extends BaseActivity {
             @Override
             public void onFail(JSONObject object) {
                 TTSUtil.speak("fail");
-                ToastUtil.show(StockOutScanActivity.this,"retrieve box list fail");
+                ToastUtil.show(StockOutScanActivity.this,"retrieve box list fail "+object.toString());
             }
 
             @Override
@@ -248,7 +271,11 @@ public class StockOutScanActivity extends BaseActivity {
     private void scanBox(String boxId) {
         StringRequest request = new StringRequest(App.getMethod("/retrive/scanBox"), RequestMethod.POST);
         request.add("billId", bizTaskId);
-        request.add("boxId", boxId);
+        if(StrUtil.equals(function, FUNCTION.FINISHED_GOODS.value) || StrUtil.equals(function, FUNCTION.SEMI_FG.value)){
+            request.add("boxId", boxId);
+        }else if(StrUtil.equals(function, FUNCTION.RTV_RTC.value) || StrUtil.equals(function, FUNCTION.STAGING.value)){
+            request.add("esr", boxId);
+        }
         request.add("function", function);
         CallServer.getInstance().add(0, request, new HttpResponse(StockOutScanActivity.this) {
             @Override
@@ -275,7 +302,7 @@ public class StockOutScanActivity extends BaseActivity {
             public void onFail(JSONObject object) {
                 Log.d(TAG,"scan box fail:"+object.toString());
                 TTSUtil.speak("fail");
-                ToastUtil.show(StockOutScanActivity.this,"scan box fail");
+                ToastUtil.show(StockOutScanActivity.this,"scan box fail "+object.toString());
             }
 
             @Override
@@ -374,12 +401,14 @@ public class StockOutScanActivity extends BaseActivity {
             if (str == null || (str.indexOf("\r") == -1 && str.indexOf("\n") == -1)) return;
             String str2 = str.replace("\r", "").replace("\n", "");
 
-            if (!StrUtil.startWithAny(str, "PA134", "PV19", "PAG1", "PAS1", "PA", "PABD", "PA95", "PA124", "PA112", "PA193", "PA140", "PCT8", "PA104", "PFGT", "BL19")) {
-                TTSUtil.speak("error");
-                et_scan_text.setText(null);
-                et_scan_text.requestFocus();
-                Toast.makeText(StockOutScanActivity.this, "invalid BoxID", Toast.LENGTH_SHORT).show();
-                return;
+            if(StrUtil.equals(function, FUNCTION.FINISHED_GOODS.value) || StrUtil.equals(function, FUNCTION.SEMI_FG.value)){
+                if (!StrUtil.startWithAny(str, "PA134", "PV19", "PAG1", "PAS1", "PA", "PABD", "PA95", "PA124", "PA112", "PA193", "PA140", "PCT8", "PA104", "PFGT", "BL19")) {
+                    TTSUtil.speak("error");
+                    et_scan_text.setText(null);
+                    et_scan_text.requestFocus();
+                    Toast.makeText(StockOutScanActivity.this, "invalid BoxID", Toast.LENGTH_SHORT).show();
+                    return;
+                }
             }
             editText.setText(null);
             scanBox(str2);
