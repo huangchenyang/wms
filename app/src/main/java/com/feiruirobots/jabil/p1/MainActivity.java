@@ -36,7 +36,7 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        tv_version.setText("Version 1.32.1");
+        tv_version.setText("Version 1.32.3");
         tv_version.setOnClickListener(v -> {
             Uri uri = Uri.parse("http://10.121.196.47:11180/jabil/pda/download");
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
@@ -64,7 +64,7 @@ public class MainActivity extends BaseActivity {
             startActivity(intent);
         }
         if (view.getId() == R.id.btn_inventory) {
-            Intent intent = new Intent(MainActivity.this, MenuActivity.class);
+            Intent intent = new Intent(MainActivity.this, InventoryMenuActivity.class);
             intent.putExtra("ACTION", ACTION.INV.value);
             startActivity(intent);
         }

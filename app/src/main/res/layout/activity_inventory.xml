@@ -4,12 +4,94 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".InventoryActivity">
+    android:orientation="vertical"
+    tools:context=".StockInActivity">
 
-    <com.feiruirobots.jabil.p1.ui.MyTopBar
-        android:id="@+id/my_top_bar"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="30dp"
-        app:m_left_text="◀"
-        app:m_title="" />
+        android:layout_height="40dp"
+        android:background="@color/bg_main">
+
+        <TextView
+            android:id="@+id/tv_header_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text=""
+            android:textColor="@color/headerTextColor"
+            android:textSize="16sp" />
+
+        <LinearLayout
+            android:id="@+id/ll_header_back"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="25dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="16dp"
+                android:src="@mipmap/icon_back" />
+
+            <TextView
+                android:id="@+id/tv_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Back"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="5dp"
+        android:gravity="end"
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/btn_submit_cycle"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:background="#000000"
+            android:textColor="#ffffff"
+            android:text="Submit Cycle In"></Button>
+
+    </LinearLayout>
+    <com.feiruirobots.jabil.p1.ui.ExtendedEditText
+        android:id="@+id/et_cycle_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:hint="Cycle out BinID">
+    </com.feiruirobots.jabil.p1.ui.ExtendedEditText>
+
+    <com.feiruirobots.jabil.p1.ui.ExtendedEditText
+        android:id="@+id/et_cycle_in_terminal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:hint="Inventory Terminal In Platform"
+        android:visibility="gone">
+    </com.feiruirobots.jabil.p1.ui.ExtendedEditText>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="Stock in Pallet pending Terminal in List:"
+        android:textColor="@color/black"
+        android:textStyle="bold">
+
+    </TextView>
+    <ListView
+        android:id="@+id/lv_biz_task"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp" />
 </LinearLayout>

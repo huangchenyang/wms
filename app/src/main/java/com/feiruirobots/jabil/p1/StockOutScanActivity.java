@@ -398,9 +398,8 @@ public class StockOutScanActivity extends BaseActivity {
         @Override
         public void afterTextChanged(Editable editable) {
             String str = editable.toString();
-            if (str == null || (str.indexOf("\r") == -1 && str.indexOf("\n") == -1)) return;
+            if (str.equals("") || str == null || (str.indexOf("\r") == -1 && str.indexOf("\n") == -1)) return;
             String str2 = str.replace("\r", "").replace("\n", "");
-
             if(StrUtil.equals(function, FUNCTION.FINISHED_GOODS.value) || StrUtil.equals(function, FUNCTION.SEMI_FG.value)){
                 if (!StrUtil.startWithAny(str, "PA134", "PV19", "PAG1", "PAS1", "PA", "PABD", "PA95", "PA124", "PA112", "PA193", "PA140", "PCT8", "PA104", "PFGT", "BL19")) {
                     TTSUtil.speak("error");

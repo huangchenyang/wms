@@ -56,6 +56,11 @@
             android:exported="false"
             android:windowSoftInputMode="adjustUnspecified|stateHidden" />
         <activity
+            android:name=".InventoryMenuActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:exported="false"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden" />
+        <activity
             android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden"
             android:exported="true"

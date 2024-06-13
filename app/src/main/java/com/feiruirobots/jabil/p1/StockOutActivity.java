@@ -267,7 +267,6 @@ public class StockOutActivity extends BaseActivity {
 
         public JumpTextWatcher(EditText editText) {
             this.editText = editText;
-
         }
 
         @Override

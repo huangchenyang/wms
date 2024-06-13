@@ -208,12 +208,15 @@ public class StockInAddActivity extends BaseActivity {
 
         }
         if (StrUtil.equals(function, FUNCTION.RAW_MATERIAL.value)) {
+            cb_batch_no.setVisibility(View.VISIBLE);
             et_reference_id.setVisibility(View.VISIBLE);
-            et_part_no.setVisibility(View.GONE);
+            et_part_no.setVisibility(View.VISIBLE);
             et_grn.setVisibility(View.VISIBLE);
             et_qty.setVisibility(View.VISIBLE);
-            et_reference_id.addTextChangedListener(new JumpTextWatcher(et_reference_id, et_qty));
+            et_reference_id.addTextChangedListener(new JumpTextWatcher(et_reference_id, et_part_no));
+            et_part_no.addTextChangedListener(new JumpTextWatcher(et_part_no, et_qty));
             et_qty.addTextChangedListener(new JumpTextWatcher(et_qty, et_grn));
+            et_terminal_in.addTextChangedListener(new JumpTextWatcher(et_terminal_in, null));
             if (et_batch_no.getVisibility() == View.VISIBLE) {
                 et_grn.addTextChangedListener(new JumpTextWatcher(et_grn, et_batch_no));
                 et_batch_no.addTextChangedListener(new JumpTextWatcher(et_batch_no, btn_add_box));
@@ -692,7 +695,7 @@ public class StockInAddActivity extends BaseActivity {
                     }
                     if (StrUtil.equals(function, FUNCTION.RAW_MATERIAL.value)) {
                         holder.tv_t1.setVisibility(View.VISIBLE);
-                        holder.tv_t2.setVisibility(View.GONE);
+                        holder.tv_t2.setVisibility(View.VISIBLE);
                         holder.tv_qty.setVisibility(View.VISIBLE);
                     }
                     if (StrUtil.equals(function, FUNCTION.RTV_RTC.value)) {
@@ -715,13 +718,13 @@ public class StockInAddActivity extends BaseActivity {
                         if (StrUtil.isNotBlank(data.getRam())) {
                             holder.tv_t1.setText(StrUtil.format("PN:{}  RAM:({})", data.getPartNo(), data.getRam()));
                         }
-                        holder.tv_t2.setText("WorkCell:" + data.getWorkCell());
+                        holder.tv_t2.setText("WC:" + data.getWorkCell());
                         holder.tv_t3.setText("PN:" + data.getPartNo());
                         holder.tv_qty.setText("Q:" + data.getQty());
                     }
                     if (StrUtil.equals(function, FUNCTION.RAW_MATERIAL.value)) {
-                        holder.tv_t1.setText(String.valueOf(data.getReferenceId()));
-                        holder.tv_t2.setText((StrUtil.format("{}", data.getId())));
+                        holder.tv_t1.setText("RF:"+String.valueOf(data.getReferenceId()));
+                        holder.tv_t2.setText("GRN:"+String.valueOf(data.getGrn()));
                         holder.tv_qty.setText(String.valueOf(data.getQty()));
                     }
                     if (StrUtil.equals(function, FUNCTION.RTV_RTC.value)) {
@@ -875,7 +878,9 @@ public class StockInAddActivity extends BaseActivity {
             request = new StringRequest(App.getMethod("/stockIn/addBox"), RequestMethod.POST);
             request.add("function",function);
             request.add("referenceId", et_reference_id.getText().toString());
+            request.add("qty", et_qty.getText().toString());
             request.add("grn", et_grn.getText().toString());
+            request.add("partNo", et_part_no.getText().toString());
             if (palletId != null) {
                 request.add("palletId", palletId);
             }

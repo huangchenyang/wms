@@ -7,7 +7,9 @@ public enum FUNCTION {
     SEMI_FG("SEMI_FG", "SFG"),
     RAW_MATERIAL("RAW_MATERIAL", "RM"),
     RTV_RTC("RTV_RTC", "RT"),
-    STAGING("STAGING", "STG");
+    STAGING("STAGING", "STG"),
+    CYCLE_IN("CYCLE_IN", "Cycle In"),
+    CYCLE_OUT("CYCLE_OUT", "Cycle Out");
     public String msg;
     public String value;
 

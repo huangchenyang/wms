@@ -90,6 +90,8 @@ public class StockInActivity extends BaseActivity {
     private void initView(){
         if(StrUtil.equals(function, FUNCTION.RTV_RTC.value) || StrUtil.equals(function, FUNCTION.STAGING.value)){
             et_box_id.setHint("ESR");
+        }else if(StrUtil.equals(function, FUNCTION.RAW_MATERIAL.value)){
+            et_box_id.setHint("GRN");
         }
         et_box_id.addTextChangedListener(new StockInActivity.JumpTextWatcher(et_box_id));
     }
@@ -144,7 +146,11 @@ public class StockInActivity extends BaseActivity {
 //                    stringBuilder.append(data.getDestId());
 //                }
                 holder.tv_pallet_id.setText("PID: "+String.valueOf(data.getId()));
-                holder.tv_fgtf.setText("FGTF: "+"");
+                if(StrUtil.equals(function, FUNCTION.RAW_MATERIAL.value)){
+                    holder.tv_fgtf.setText("RF: "+"");
+                }else{
+                    holder.tv_fgtf.setText("FGTF: "+data.getFgtf());
+                }
                 holder.tv_binid.setText("BinID: "+data.getBinId());
                 holder.tv_box_count.setText("BC: "+String.valueOf(data.getBoxCount()));
                 holder.tv_terminal_in.setText("TIN: "+data.getTerminal());
