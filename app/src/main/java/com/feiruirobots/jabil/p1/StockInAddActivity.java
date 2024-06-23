@@ -1116,6 +1116,26 @@ public class StockInAddActivity extends BaseActivity {
 //                }
 //            }
             if (editText.getId() == et_box_id.getId()) {
+                if (StrUtil.startWithAny(str, "PA134", "PV19", "PAG1", "PAS1", "PA", "PABD", "PA95", "PA124", "PA112", "PA193", "PA140", "PCT8", "PA104", "PFGT", "BL19")) {
+                    if(cb_batch_no.isChecked()){
+                        TTSUtil.speak("error");
+                        ToastUtil.show(StockInAddActivity.this,"invalid box id,don't select batch");
+                        et_box_id.setText(null);
+                        et_box_id.requestFocus();
+                        return;
+                    }
+                }
+
+                if (StrUtil.startWithAny(str, "RA134", "RV19", "RAG1", "RAS1", "RA", "RA78", "RA95", "RA124", "RA112", "RA193", "RA140", "PA102", "RA104", "RA11", "RL19")) {
+                    if(!cb_batch_no.isChecked()) {
+                        TTSUtil.speak("error");
+                        ToastUtil.show(StockInAddActivity.this, "invalid box id,need select batch");
+                        et_box_id.setText(null);
+                        et_box_id.requestFocus();
+                        return;
+                    }
+                }
+
                 if (!cb_batch_no.isChecked() && !StrUtil.startWithAny(str, "PA134", "PV19", "PAG1", "PAS1", "PA", "PABD", "PA95", "PA124", "PA112", "PA193", "PA140", "PCT8", "PA104", "PFGT", "BL19")) {
                     TTSUtil.speak("error");
                     ToastUtil.show(StockInAddActivity.this,"invalid box id");

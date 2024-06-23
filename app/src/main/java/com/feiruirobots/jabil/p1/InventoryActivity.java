@@ -26,6 +26,7 @@ import com.feiruirobots.jabil.p1.http.CallServer;
 import com.feiruirobots.jabil.p1.http.HttpResponse;
 import com.feiruirobots.jabil.p1.model.BizTask;
 import com.feiruirobots.jabil.p1.model.Carton;
+import com.feiruirobots.jabil.p1.model.CycleJson;
 import com.feiruirobots.jabil.p1.model.FUNCTION;
 import com.feiruirobots.jabil.p1.model.ListJson;
 import com.yanzhenjie.nohttp.RequestMethod;
@@ -43,10 +44,7 @@ import cn.hutool.core.util.StrUtil;
 public class InventoryActivity extends BaseActivity {
     private String function;
     private MyListAdapter adapter;
-    private List<BizTask> bizTaskList = new ArrayList<>();
-    private List<ListJson> listJsons = new ArrayList<>();
-    public static BizTask existPallet= new BizTask();
-    public static List<Carton> existCartonList = new ArrayList<>();
+    private List<CycleJson> cycleJsons = new ArrayList<>();
 
     private String TAG = "hcy--InventoryActivity";
 
@@ -65,7 +63,11 @@ public class InventoryActivity extends BaseActivity {
             // 重写handleMessage方法
             super.handleMessage(msg);
             if (msg.what == 1) {
-                getListTask();
+                if(StrUtil.equals(function, FUNCTION.CYCLE_OUT.value) ){
+                    getCycleOutList();
+                }else if(StrUtil.equals(function, FUNCTION.CYCLE_IN.value)){
+                    getCycleInList();
+                }
                 handlerSend.sendEmptyMessageDelayed(1, 1000);
             }
         }
@@ -80,7 +82,11 @@ public class InventoryActivity extends BaseActivity {
         function = intent.getStringExtra("FUNCTION");
         initTitle("Inventory->"+ Objects.requireNonNull(FUNCTION.of(function)).msg+ " pallet");
         initListView();
-        //getListTask();
+        if(StrUtil.equals(function, FUNCTION.CYCLE_OUT.value) ){
+            getCycleOutList();
+        }else if(StrUtil.equals(function, FUNCTION.CYCLE_IN.value)){
+            getCycleInList();
+        }
         handlerSend.sendEmptyMessageDelayed(1, 1000);
         initView();
     }
@@ -104,27 +110,32 @@ public class InventoryActivity extends BaseActivity {
     @OnClick({R.id.btn_submit_cycle})
     public void onClick(View view) {
         if (view.getId() == R.id.btn_submit_cycle) {
-//            Intent intent = new Intent(InventoryActivity.this, StockInAddActivity.class);
-//            intent.putExtra("FUNCTION", function);
-//            intent.putExtra("AddType","New Packet");
-//            startActivity(intent);
+            if(StrUtil.equals(function, FUNCTION.CYCLE_OUT.value) ){
+                String binId = et_cycle_id.getText().toString();
+                if(binId==null || binId.equals("")){
+                    Toast.makeText(InventoryActivity.this, "BinId is null", Toast.LENGTH_SHORT).show();
+                }else{
+                    setCycleOut(binId);
+                }
+            }else if(StrUtil.equals(function, FUNCTION.CYCLE_IN.value)){
+                String binId = et_cycle_id.getText().toString();
+                String terminal = et_cycle_in_terminal.getText().toString();
+                if(binId==null || binId.equals("") || terminal==null || binId.equals("")){
+                    Toast.makeText(InventoryActivity.this, "BinId is null or terminal is null", Toast.LENGTH_SHORT).show();
+                }else{
+                    setCycleIn(binId,terminal);
+                }
+            }
         }
-
     }
 
-    private void startActivityExist(){
-        Intent intent = new Intent(InventoryActivity.this, StockInAddActivity.class);
-        intent.putExtra("FUNCTION", function);
-        intent.putExtra("AddType","Exist Packet");
-        startActivity(intent);
-    }
 
     class BizTaskView {
         TextView tv_pallet_id, tv_fgtf, tv_binid, tv_box_count,tv_terminal_in;
     }
 
     private void initListView() {
-        adapter = new MyListAdapter<BizTaskView, ListJson>(InventoryActivity.this, listJsons, R.layout.item_task_biz) {
+        adapter = new MyListAdapter<BizTaskView, CycleJson>(InventoryActivity.this, cycleJsons, R.layout.item_task_biz) {
             @Override
             public BizTaskView initView(View convertView, BizTaskView holder) {
                 if (holder == null) holder = new BizTaskView();
@@ -137,16 +148,15 @@ public class InventoryActivity extends BaseActivity {
             }
 
             @Override
-            public void initContent(BizTaskView holder, final ListJson data) {
-                if(StrUtil.equals(function, FUNCTION.CYCLE_OUT.value)){
-                    holder.tv_pallet_id.setText("BinID: "+String.valueOf(data.getId()));
-                }else{
-                    holder.tv_pallet_id.setText("BoxID: "+String.valueOf(data.getId()));
-                }
-                holder.tv_fgtf.setVisibility(View.GONE);
-                holder.tv_binid.setText("Status: "+"");
+            public void initContent(BizTaskView holder, final CycleJson data) {
+                holder.tv_fgtf.setVisibility(View.VISIBLE);
+                holder.tv_pallet_id.setVisibility(View.VISIBLE);
+                holder.tv_binid.setVisibility(View.VISIBLE);
                 holder.tv_box_count.setVisibility(View.GONE);
                 holder.tv_terminal_in.setVisibility(View.GONE);
+                holder.tv_pallet_id.setText("BinID: "+String.valueOf(data.getBinId()));
+                holder.tv_fgtf.setText("TIN: "+data.getTerminal());
+                holder.tv_binid.setText("Status: "+data.getPalletStatus());
             }
         };
         lv_biz_task.setOnItemClickListener((parent, view, position, id) -> {
@@ -158,8 +168,8 @@ public class InventoryActivity extends BaseActivity {
         lv_biz_task.setAdapter(adapter);
     }
 
-    private void getListTask() {
-        String url = App.getMethod("/stockIn/list?function=" + function);
+    private void getCycleOutList() {
+        String url = App.getMethod("/inventory/cycle_out_list");
         StringRequest request = new StringRequest(url, RequestMethod.POST);
         CallServer.getInstance().add(0, request, new HttpResponse(InventoryActivity.this) {
             @Override
@@ -170,13 +180,12 @@ public class InventoryActivity extends BaseActivity {
             @Override
             public void onOK(JSONObject json) {
                 Log.d(TAG,"onOK:"+json.toString());
-                listJsons.clear();
+                cycleJsons.clear();
                 JSONArray arrays = json.getJSONArray("data");
                 for (Object array : arrays) {
-//                    Log.d(TAG,"array:"+array.toString());
                     JSONObject jsonObject = (JSONObject) array;
-                    ListJson listJson =ListJson.parse(jsonObject);
-                    listJsons.add(listJson);
+                    CycleJson cycleJson =CycleJson.parse(jsonObject);
+                    cycleJsons.add(cycleJson);
                 }
                 adapter.notifyDataSetChanged();
             }
@@ -196,9 +205,113 @@ public class InventoryActivity extends BaseActivity {
         });
     }
 
+    private void setCycleOut(String binId) {
+        String url = App.getMethod("/inventory/cycle_out");
+        StringRequest request = new StringRequest(url, RequestMethod.POST);
+        request.add("bin_id",binId);
+        CallServer.getInstance().add(0, request, new HttpResponse(InventoryActivity.this) {
+            @Override
+            public void onStart(int what) {
+
+            }
+
+            @Override
+            public void onOK(JSONObject json) {
+                Log.d(TAG,"onOK:"+json.toString());
+                ToastUtil.show(InventoryActivity.this,"cycle out ok");
+            }
+
+            @Override
+            public void onFail(JSONObject object) {
+                Log.d(TAG,"onFail:"+object.toString());
+                TTSUtil.speak("fail");
+                ToastUtil.show(InventoryActivity.this,"cycle out fail "+object.toString());
+            }
+
+            @Override
+            public void onError() {
+                TTSUtil.speak("error");
+                ToastUtil.show(InventoryActivity.this,"cycle out error");
+            }
+        });
+    }
+
+    private void getCycleInList() {
+        String url = App.getMethod("/inventory/cycle_in_list");
+        StringRequest request = new StringRequest(url, RequestMethod.POST);
+        CallServer.getInstance().add(0, request, new HttpResponse(InventoryActivity.this) {
+            @Override
+            public void onStart(int what) {
+
+            }
+
+            @Override
+            public void onOK(JSONObject json) {
+                Log.d(TAG,"onOK:"+json.toString());
+                cycleJsons.clear();
+                JSONArray arrays = json.getJSONArray("data");
+                for (Object array : arrays) {
+                    JSONObject jsonObject = (JSONObject) array;
+                    CycleJson cycleJson =CycleJson.parse(jsonObject);
+                    cycleJsons.add(cycleJson);
+                }
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onFail(JSONObject object) {
+                Log.d(TAG,"onFail:"+object.toString());
+                TTSUtil.speak("fail");
+                ToastUtil.show(InventoryActivity.this,"list get fail "+object.toString());
+            }
+
+            @Override
+            public void onError() {
+                TTSUtil.speak("error");
+                ToastUtil.show(InventoryActivity.this,"list get error");
+            }
+        });
+    }
+
+    private void setCycleIn(String boxId,String terminal) {
+        String url = App.getMethod("/inventory/cycle_in");
+        StringRequest request = new StringRequest(url, RequestMethod.POST);
+        request.add("box_id",boxId);
+        request.add("terminal_id",terminal);
+        CallServer.getInstance().add(0, request, new HttpResponse(InventoryActivity.this) {
+            @Override
+            public void onStart(int what) {
+
+            }
+
+            @Override
+            public void onOK(JSONObject json) {
+                Log.d(TAG,"onOK:"+json.toString());
+                ToastUtil.show(InventoryActivity.this,"cycle in ok");
+            }
+
+            @Override
+            public void onFail(JSONObject object) {
+                Log.d(TAG,"onFail:"+object.toString());
+                TTSUtil.speak("fail");
+                ToastUtil.show(InventoryActivity.this,"cycle in fail "+object.toString());
+            }
+
+            @Override
+            public void onError() {
+                TTSUtil.speak("error");
+                ToastUtil.show(InventoryActivity.this,"cycle in error");
+            }
+        });
+    }
+
     @Override
     protected void onResume() {
-        getListTask();
+        if(StrUtil.equals(function, FUNCTION.CYCLE_OUT.value) ){
+            getCycleOutList();
+        }else if(StrUtil.equals(function, FUNCTION.CYCLE_IN.value)){
+            getCycleInList();
+        }
         super.onResume();
     }
 
@@ -233,9 +346,8 @@ public class InventoryActivity extends BaseActivity {
         @Override
         public void afterTextChanged(Editable editable) {
             String str = editable.toString();
-            if (str == null || (str.indexOf("\r") == -1 && str.indexOf("\n") == -1)) return;
+            if (str == null || str.equals("")|| (str.indexOf("\r") == -1 && str.indexOf("\n") == -1)) return;
             editText.setText(str.replace("\r", "").replace("\n", ""));
-
 
             if (editText.getId() == et_cycle_id.getId()) {
                 if (StrUtil.equals(function, FUNCTION.CYCLE_OUT.value)) {
@@ -266,12 +378,6 @@ public class InventoryActivity extends BaseActivity {
                 //光标移动到标记框内部的末尾
                 et.setSelection(et.getText().length());
             }
-            if (nextView.getId() == R.id.btn_add_box) {
-//                boxAdd();
-            }
-//            if (nextView.getId() == R.id.btn_add_pallet) {
-//                palletAdd();
-//            }
         }
     }
 
