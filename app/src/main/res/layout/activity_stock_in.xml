@@ -75,7 +75,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
-        android:hint="BoxID">
+        android:hint="Any BoxID on Pallet">
 
     </com.feiruirobots.jabil.p1.ui.ExtendedEditText>
     <TextView

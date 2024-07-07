@@ -93,6 +93,7 @@ public class StockInActivity extends BaseActivity {
         }else if(StrUtil.equals(function, FUNCTION.RAW_MATERIAL.value)){
             et_box_id.setHint("GRN");
         }
+
         et_box_id.addTextChangedListener(new StockInActivity.JumpTextWatcher(et_box_id));
     }
 

@@ -125,10 +125,11 @@
         android:layout_marginTop="5dp" />
 
     <TextView
+        android:id="@+id/tv_inventory_comment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
-        android:text="Stock in Pallet pending Terminal in List:"
+        android:text="Cycle In Pallet pending Terminal in List:"
         android:textColor="@color/black"
         android:textStyle="bold">
 

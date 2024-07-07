@@ -58,6 +58,8 @@ public class StockOutScanActivity extends BaseActivity {
     private MyListAdapter<CartonView, BillData> allAdapter;
 //    private List<Carton> outList = new ArrayList<>();
 //    private List<BillData> allList = new ArrayList<>();
+    private TextView scan_carton_count_tv;
+    private int scan_carton_count = 0;
     private String TAG="hcy--StockOutScanActivity";
 
     @Override
@@ -66,6 +68,7 @@ public class StockOutScanActivity extends BaseActivity {
         setContentView(R.layout.activity_stock_out_scan);
         ButterKnife.bind(this);
         Intent intent = this.getIntent();
+        scan_carton_count_tv = findViewById(R.id.scan_carton_count_tv);
         function = intent.getStringExtra("FUNCTION");
         bizTaskId = intent.getStringExtra("BizTaskId");
         et_scan_text.addTextChangedListener(new JumpTextWatcher(et_scan_text, null));
@@ -235,6 +238,9 @@ public class StockOutScanActivity extends BaseActivity {
             };
             lv_all.setAdapter(allAdapter);
         }
+
+        scan_carton_count=allList.size();
+        scan_carton_count_tv.setText(String.valueOf(scan_carton_count));
         allAdapter.setDataList(allList);
         allAdapter.notifyDataSetChanged();
     }

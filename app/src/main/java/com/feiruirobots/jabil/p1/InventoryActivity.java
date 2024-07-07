@@ -56,6 +56,7 @@ public class InventoryActivity extends BaseActivity {
     EditText et_cycle_in_terminal;
     @BindView(R.id.btn_submit_cycle)
     Button btn_submit_cycle;
+    private TextView tv_inventory_comment;
 
     private Handler handlerSend = new Handler(Looper.getMainLooper()) {
         @Override
@@ -92,15 +93,18 @@ public class InventoryActivity extends BaseActivity {
     }
 
     private void initView(){
+        tv_inventory_comment = findViewById(R.id.tv_inventory_comment);
         if(StrUtil.equals(function, FUNCTION.CYCLE_OUT.value) ){
             et_cycle_id.setVisibility(View.VISIBLE);
             btn_submit_cycle.setText("Submit Cycle Out");
             et_cycle_id.setHint("Cycle out BinID");
+            tv_inventory_comment.setText("Cycle Out Pallet pending Terminal in List:");
             et_cycle_id.addTextChangedListener(new InventoryActivity.JumpTextWatcher(et_cycle_id,null));
         }else if(StrUtil.equals(function, FUNCTION.CYCLE_IN.value)){
             et_cycle_id.setVisibility(View.VISIBLE);
             et_cycle_in_terminal.setVisibility(View.VISIBLE);
             btn_submit_cycle.setText("Submit Cycle In");
+            tv_inventory_comment.setText("Cycle In Pallet pending Terminal in List:");
             et_cycle_id.setHint("BoxID");
             et_cycle_id.addTextChangedListener(new InventoryActivity.JumpTextWatcher(et_cycle_id, et_cycle_in_terminal));
             et_cycle_in_terminal.addTextChangedListener(new InventoryActivity.JumpTextWatcher(et_cycle_in_terminal,null));

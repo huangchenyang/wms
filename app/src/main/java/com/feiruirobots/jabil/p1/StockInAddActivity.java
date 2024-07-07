@@ -103,6 +103,7 @@ public class StockInAddActivity extends BaseActivity {
     @BindView(R.id.et_terminal_in)
     ExtendedEditText et_terminal_in;
     CheckBox cb_hub;
+    private TextView scan_carton_count_tv;
     private String function;
     private Integer palletId;
     private List<Carton> cartonList = new ArrayList<>();
@@ -111,6 +112,7 @@ public class StockInAddActivity extends BaseActivity {
     private String addType = "";
     private String binImageUrl = "";
     private String esrType="";
+    private int scan_carton_count = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,6 +157,7 @@ public class StockInAddActivity extends BaseActivity {
     }
 
     private void initView() {
+        scan_carton_count_tv = findViewById(R.id.scan_carton_count_tv);
         et_terminal.addTextChangedListener(new JumpTextWatcher(et_terminal, btn_apply_bin));
         if (StrUtil.equals(function, FUNCTION.FINISHED_GOODS.value)) {
             cb_hub = findViewById(R.id.cb_hub);
@@ -812,7 +815,21 @@ public class StockInAddActivity extends BaseActivity {
             });
             lv_carton.setAdapter(adapter);
         }
-
+        //更新显示列表的数量
+        if((StrUtil.equals(function, FUNCTION.STAGING.value) || StrUtil.equals(function, FUNCTION.RTV_RTC.value))){
+            String spType = sp_type.getSelectedItem().toString();
+            if(spType!=null && !spType.equals("Pallet")){
+                scan_carton_count = 0;
+                for(Carton carton:cartonList){
+                    scan_carton_count = scan_carton_count + carton.getQty();
+                }
+            }else{
+                scan_carton_count = cartonList.size();
+            }
+        }else {
+            scan_carton_count = cartonList.size();
+        }
+        scan_carton_count_tv.setText(String.valueOf(scan_carton_count));
         adapter.setDataList(cartonList);
         adapter.notifyDataSetChanged();
 //        tv_box_count.setText(String.valueOf(cartonList.size()));
@@ -1193,7 +1210,7 @@ public class StockInAddActivity extends BaseActivity {
             et_part_no.requestFocus();
         }
         if (StrUtil.equals(function, FUNCTION.RAW_MATERIAL.value)) {
-            et_reference_id.requestFocus();
+            et_part_no.requestFocus();
         }
         if (StrUtil.equals(function, FUNCTION.RTV_RTC.value)) {
             et_esr.requestFocus();
