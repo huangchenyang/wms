@@ -80,6 +80,50 @@
         android:visibility="gone">
     </com.feiruirobots.jabil.p1.ui.ExtendedEditText>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+        <RadioGroup
+            android:id="@+id/radio_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/radio_button1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Consolidation out Zero"/>
+
+            <RadioButton
+                android:id="@+id/radio_button2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Consolidation out all"/>
+
+        </RadioGroup>
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_marginTop="5dp"
+        android:text="Consolidation in/Consolidaation out Zero order pallet list:"
+        android:textColor="@color/black"
+        android:textStyle="bold">
+
+    </TextView>
+    <ListView
+        android:id="@+id/lv_con_in_out_biz_task"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_marginTop="5dp" />
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

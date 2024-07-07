@@ -78,6 +78,9 @@ public class StockOutScanActivity extends BaseActivity {
 //        getAll();
         if(StrUtil.equals(function, FUNCTION.RTV_RTC.value) || StrUtil.equals(function, FUNCTION.STAGING.value)){
             et_scan_text.setHint("ESR");
+        }else if(StrUtil.equals(function, FUNCTION.RAW_MATERIAL.value)){
+            initTitle("Retrieve->"+Objects.requireNonNull(FUNCTION.of(function)).msg+"->Retrieve GRN");
+            et_scan_text.setHint("GRN");
         }
     }
 
@@ -275,7 +278,10 @@ public class StockOutScanActivity extends BaseActivity {
             request.add("boxId", boxId);
         }else if(StrUtil.equals(function, FUNCTION.RTV_RTC.value) || StrUtil.equals(function, FUNCTION.STAGING.value)){
             request.add("esr", boxId);
+        }else if(StrUtil.equals(function, FUNCTION.RAW_MATERIAL.value)){
+            request.add("grn", boxId);
         }
+
         request.add("function", function);
         CallServer.getInstance().add(0, request, new HttpResponse(StockOutScanActivity.this) {
             @Override
