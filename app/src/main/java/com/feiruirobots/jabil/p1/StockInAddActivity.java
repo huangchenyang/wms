@@ -817,14 +817,17 @@ public class StockInAddActivity extends BaseActivity {
         }
         //更新显示列表的数量
         if((StrUtil.equals(function, FUNCTION.STAGING.value) || StrUtil.equals(function, FUNCTION.RTV_RTC.value))){
-            String spType = sp_type.getSelectedItem().toString();
-            if(spType!=null && !spType.equals("Pallet")){
-                scan_carton_count = 0;
-                for(Carton carton:cartonList){
-                    scan_carton_count = scan_carton_count + carton.getQty();
+            if(sp_type!=null){
+//                String spType = sp_type.getSelectedItem().toString();
+                int selectedItemPosition = sp_type.getSelectedItemPosition();
+                if(selectedItemPosition==0){                            //Cartion
+                    scan_carton_count = 0;
+                    for(Carton carton:cartonList){
+                        scan_carton_count = scan_carton_count + carton.getQty();
+                    }
+                }else{
+                    scan_carton_count = cartonList.size();
                 }
-            }else{
-                scan_carton_count = cartonList.size();
             }
         }else {
             scan_carton_count = cartonList.size();
