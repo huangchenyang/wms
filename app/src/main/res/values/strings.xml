@@ -2,6 +2,7 @@
     <string name="app_name">P2336_JABIL_P1</string>
     <string name="spinner_type_prompt">select type</string>
     <string name="spinner_forward_prompt">select forward</string>
+    <string name="spinner_reason_prompt">select reason</string>
     <string name="spinner_workcell_prompt">select workcell</string>
     <string-array name="spinner_type_items">
         <item>Carton</item>

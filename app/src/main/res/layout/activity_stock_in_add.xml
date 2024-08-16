@@ -114,6 +114,28 @@
             android:prompt="@string/spinner_forward_prompt"
             android:visibility="gone" />
 
+        <Spinner
+            android:id="@+id/sp_reason"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="5dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:prompt="@string/spinner_reason_prompt"
+            android:visibility="gone" />
+
+        <com.feiruirobots.jabil.p1.ui.ExtendedEditText
+            android:id="@+id/et_planned_ship_date"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/bg_edit"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:hint="Planned Ship Date"
+            android:paddingLeft="10dp"
+            android:visibility="gone" />
+
         <com.feiruirobots.jabil.p1.ui.ExtendedEditText
             android:id="@+id/et_reference_id"
             android:layout_width="match_parent"
@@ -201,14 +223,14 @@
             android:visibility="gone" />
 
         <com.feiruirobots.jabil.p1.ui.ExtendedEditText
-            android:id="@+id/et_esr"
+            android:id="@+id/et_comment"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_marginTop="5dp"
             android:background="@drawable/bg_edit"
             android:focusable="true"
             android:focusableInTouchMode="true"
-            android:hint="ESR"
+            android:hint="Comment"
             android:paddingLeft="10dp"
             android:visibility="gone" />
 
@@ -221,6 +243,18 @@
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:hint="Carton Count"
+            android:paddingLeft="10dp"
+            android:visibility="gone" />
+
+        <com.feiruirobots.jabil.p1.ui.ExtendedEditText
+            android:id="@+id/et_esr"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/bg_edit"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:hint="ESR"
             android:paddingLeft="10dp"
             android:visibility="gone" />
 

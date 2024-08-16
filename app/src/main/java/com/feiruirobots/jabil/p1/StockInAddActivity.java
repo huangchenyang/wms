@@ -4,6 +4,7 @@ import static com.feiruirobots.jabil.p1.StockInActivity.existCartonList;
 import static com.feiruirobots.jabil.p1.StockInActivity.existPallet;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.app.job.JobInfo;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,6 +20,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -44,6 +46,7 @@ import com.yanzhenjie.nohttp.rest.Response;
 import com.yanzhenjie.nohttp.rest.StringRequest;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 
@@ -113,6 +116,9 @@ public class StockInAddActivity extends BaseActivity {
     private String binImageUrl = "";
     private String esrType="";
     private int scan_carton_count = 0;
+    private EditText et_planned_ship_date;
+    private Spinner sp_reason;
+    private EditText et_comment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -158,6 +164,9 @@ public class StockInAddActivity extends BaseActivity {
 
     private void initView() {
         scan_carton_count_tv = findViewById(R.id.scan_carton_count_tv);
+        et_comment = findViewById(R.id.et_comment);
+        sp_reason = findViewById(R.id.sp_reason);
+        et_planned_ship_date = findViewById(R.id.et_planned_ship_date);
         et_terminal.addTextChangedListener(new JumpTextWatcher(et_terminal, btn_apply_bin));
         if (StrUtil.equals(function, FUNCTION.FINISHED_GOODS.value)) {
             cb_hub = findViewById(R.id.cb_hub);
@@ -277,9 +286,18 @@ public class StockInAddActivity extends BaseActivity {
             sp_forward.setVisibility(View.VISIBLE);
             et_esr.setVisibility(View.VISIBLE);
             et_carton_count.setVisibility(View.VISIBLE);
+            et_planned_ship_date.setVisibility(View.VISIBLE);
+            et_comment.setVisibility(View.VISIBLE);
+            sp_reason.setVisibility(View.VISIBLE);
+
             et_esr.addTextChangedListener(new JumpTextWatcher(et_esr, btn_add_box));
             et_terminal_in.addTextChangedListener(new JumpTextWatcher(et_terminal_in, null));
-
+            et_planned_ship_date.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showDatePickerDialog();
+                }
+            });
             sp_type.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -288,8 +306,8 @@ public class StockInAddActivity extends BaseActivity {
                         et_esr.addTextChangedListener(new JumpTextWatcher(et_esr, btn_add_box));
                     }else {
                         et_carton_count.setVisibility(View.VISIBLE);
-                        et_esr.addTextChangedListener(new JumpTextWatcher(et_esr, et_carton_count));
-                        et_carton_count.addTextChangedListener(new JumpTextWatcher(et_carton_count, btn_add_box));
+                        et_esr.addTextChangedListener(new JumpTextWatcher(et_carton_count, et_esr));
+                        et_carton_count.addTextChangedListener(new JumpTextWatcher(et_esr, btn_add_box));
                     }
                 }
 
@@ -475,7 +493,7 @@ public class StockInAddActivity extends BaseActivity {
             request = new StringRequest(App.getMethod("/stockIn/applyBin"), RequestMethod.POST);
             Log.d(TAG,"palletId:"+palletId);
             request.add("palletId", palletId);
-            request.add("firstFloor", cb_special_pallet.isChecked() ? 1 : 0);
+            request.add("first_floor", cb_special_pallet.isChecked() ? 1 : 0);
             request.add("function", function);
 //            request.set("terminal", et_terminal.getText().toString());
         }
@@ -867,6 +885,7 @@ public class StockInAddActivity extends BaseActivity {
             request.add("fgtf", et_fgtf.getText().toString());
             request.add("workCell", sp_work_cell.getSelectedItem().toString());
             request.add("hub", cb_hub.isChecked() ? 1 : 0);
+            request.add("first_floor", cb_special_pallet.isChecked() ? 1 : 0);
         }
         if (StrUtil.equals(function, FUNCTION.SEMI_FG.value)) {
             if (!ObjectUtil.isAllNotEmpty(et_box_id.getText(), et_part_no.getText(), et_qty.getText())) {
@@ -893,6 +912,7 @@ public class StockInAddActivity extends BaseActivity {
             request.add("fgtf", et_fgtf.getText().toString());
             request.add("qty", et_qty.getText().toString());
             request.add("workCell", sp_work_cell.getSelectedItem().toString());
+            request.add("first_floor", cb_special_pallet.isChecked() ? 1 : 0);
         }
         if (StrUtil.equals(function, FUNCTION.RAW_MATERIAL.value)) {
             request = new StringRequest(App.getMethod("/stockIn/addBox"), RequestMethod.POST);
@@ -904,6 +924,7 @@ public class StockInAddActivity extends BaseActivity {
             if (palletId != null) {
                 request.add("palletId", palletId);
             }
+            request.add("first_floor", cb_special_pallet.isChecked() ? 1 : 0);
         }
         if (StrUtil.equals(function, FUNCTION.RTV_RTC.value)) {
             if (!ObjectUtil.isAllNotEmpty(et_esr.getText())) {
@@ -920,6 +941,7 @@ public class StockInAddActivity extends BaseActivity {
             if (palletId != null) {
                 request.add("palletId", palletId);
             }
+            request.add("first_floor", cb_special_pallet.isChecked() ? 1 : 0);
         }
         if (StrUtil.equals(function, FUNCTION.STAGING.value)) {
             if (!ObjectUtil.isAllNotEmpty(et_esr.getText())) {
@@ -937,6 +959,7 @@ public class StockInAddActivity extends BaseActivity {
             if (palletId != null) {
                 request.add("palletId", palletId);
             }
+            request.add("first_floor", cb_special_pallet.isChecked() ? 1 : 0);
         }
         assert request != null;
         CallServer.getInstance().add(0, request, new HttpResponse(StockInAddActivity.this) {
@@ -986,10 +1009,10 @@ public class StockInAddActivity extends BaseActivity {
 //            if (ObjectUtil.isAllNotEmpty(terminal, palletId)) {
             if (palletId!=null) {
                 request = new StringRequest(App.getMethod("/stockIn/addTerminalIn"), RequestMethod.POST);
-                Log.d(TAG,"palletId:"+palletId);
-                Log.d(TAG,"terminal:"+terminal);
+//                Log.d(TAG,"palletId:"+palletId);
+//                Log.d(TAG,"terminal:"+terminal);
                 request.add("palletId", palletId);
-                request.add("firstFloor", cb_special_pallet.isChecked() ? 1 : 0);
+//                request.add("firstFloor", cb_special_pallet.isChecked() ? 1 : 0);
                 request.add("terminal", terminal);
             }
         }
@@ -1001,7 +1024,7 @@ public class StockInAddActivity extends BaseActivity {
                 Log.d(TAG,"palletId:"+palletId);
                 Log.d(TAG,"terminal:"+terminal);
                 request.add("palletId", palletId);
-                request.add("firstFloor", cb_special_pallet.isChecked() ? 1 : 0);
+//                request.add("firstFloor", cb_special_pallet.isChecked() ? 1 : 0);
                 request.add("terminal", terminal);
             }
         }
@@ -1011,7 +1034,7 @@ public class StockInAddActivity extends BaseActivity {
             if (palletId!=null) {
                 request = new StringRequest(App.getMethod("/stockIn/addTerminalIn"), RequestMethod.POST);
                 request.add("palletId", palletId);
-                request.add("firstFloor", cb_special_pallet.isChecked() ? 1 : 0);
+//                request.add("firstFloor", cb_special_pallet.isChecked() ? 1 : 0);
 //                request.set("terminal", et_terminal.getText().toString());
                 request.add("terminal", terminal);
             }
@@ -1022,7 +1045,7 @@ public class StockInAddActivity extends BaseActivity {
             if (palletId!=null) {
                 request = new StringRequest(App.getMethod("/stockIn/addTerminalIn"), RequestMethod.POST);
                 request.add("palletId", palletId);
-                request.add("firstFloor", cb_special_pallet.isChecked() ? 1 : 0);
+//                request.add("firstFloor", cb_special_pallet.isChecked() ? 1 : 0);
 //                request.set("terminal", et_terminal.getText().toString());
                 request.add("terminal", terminal);
             }
@@ -1033,7 +1056,7 @@ public class StockInAddActivity extends BaseActivity {
             if (palletId!=null) {
                 request = new StringRequest(App.getMethod("/stockIn/addTerminalIn"), RequestMethod.POST);
                 request.add("palletId", palletId);
-                request.add("firstFloor", cb_special_pallet.isChecked() ? 1 : 0);
+//                request.add("firstFloor", cb_special_pallet.isChecked() ? 1 : 0);
                 request.add("terminal", terminal);
 //                request.set("terminal", et_terminal.getText().toString());
             }
@@ -1136,6 +1159,15 @@ public class StockInAddActivity extends BaseActivity {
 //                }
 //            }
             if (editText.getId() == et_box_id.getId()) {
+                if (StrUtil.equals(function, FUNCTION.FINISHED_GOODS.value)|| StrUtil.equals(function, FUNCTION.SEMI_FG.value)){
+                    if (StrUtil.startWithAny(str, "RA134", "RV19", "RAG1", "RAS1", "RA", "RA78", "RA95", "RA124", "RA112", "RA193", "RA140", "PA102", "RA104", "RA11", "RL19")) {
+                        if(!cb_batch_no.isChecked()) {
+                            RBoxIDConfirmDialog();
+                            return;
+                        }
+                    }
+                }
+
                 if (StrUtil.startWithAny(str, "PA134", "PV19", "PAG1", "PAS1", "PA", "PABD", "PA95", "PA124", "PA112", "PA193", "PA140", "PCT8", "PA104", "PFGT", "BL19")) {
                     if(cb_batch_no.isChecked()){
                         TTSUtil.speak("error");
@@ -1261,6 +1293,42 @@ public class StockInAddActivity extends BaseActivity {
             et_terminal_in.requestFocus();
         });
         dialog.show();
+    }
+
+    private void RBoxIDConfirmDialog(){
+        AlertDialog.Builder dialog = new AlertDialog.Builder(StockInAddActivity.this);
+        dialog.setTitle("Alert");
+        dialog.setMessage("No Batch! Confirm to proceed?");
+        dialog.setCancelable(false);
+        dialog.setPositiveButton("Yes", (dialog12, which) -> {
+            boxAdd();
+        });
+        dialog.setNegativeButton("No", (dialog1, which) -> {
+            et_box_id.setText(null);
+            et_box_id.requestFocus();
+        });
+        dialog.show();
+    }
+
+    private void showDatePickerDialog() {
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                this,
+                new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        // Update the EditText with selected date
+                        String selectedDate = (month + 1) + "/" + dayOfMonth + "/" + year;
+                        et_planned_ship_date.setText(selectedDate);
+                    }
+                },
+                year, month, dayOfMonth
+        );
+        datePickerDialog.show();
     }
 
     @Override

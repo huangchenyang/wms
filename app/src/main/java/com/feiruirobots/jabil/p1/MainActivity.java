@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.Settings;
 import android.view.View;
 import android.widget.TextView;
@@ -36,7 +37,7 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        tv_version.setText("Version 1.32.14");
+        tv_version.setText("Version 1.32.18");
         tv_version.setOnClickListener(v -> {
             Uri uri = Uri.parse("http://10.121.196.47:11180/jabil/pda/download");
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
@@ -77,7 +78,7 @@ public class MainActivity extends BaseActivity {
         dialog.setMessage("Confirm Back!");//设置对话框的内容
         dialog.setCancelable(false);//设置对话框是否可以取消
         //确定按钮的点击事件
-        dialog.setPositiveButton("OK", (dialog12, which) -> this.finish());
+        dialog.setPositiveButton("OK", (dialog12, which) -> this.finishAffinity());
         //取消按钮的点击事件
         dialog.setNegativeButton("Cancel", (dialog1, which) -> {
         });
