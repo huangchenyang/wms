@@ -598,9 +598,9 @@ public class StockInAddActivity extends BaseActivity {
             }
 
             @Override
-            public void onError() {
+            public void onError(String error) {
                 TTSUtil.speak("error");
-                ToastUtil.show(StockInAddActivity.this,"pallet add error");
+                ToastUtil.show(StockInAddActivity.this,"pallet add error"+error);
             }
         });
     }
@@ -687,9 +687,9 @@ public class StockInAddActivity extends BaseActivity {
             }
 
             @Override
-            public void onError() {
+            public void onError(String error) {
                 TTSUtil.speak("error");
-                ToastUtil.show(StockInAddActivity.this,"pallet delete fail");
+                ToastUtil.show(StockInAddActivity.this,"pallet delete fail:"+error);
             }
         });
     }
@@ -819,9 +819,9 @@ public class StockInAddActivity extends BaseActivity {
                         }
 
                         @Override
-                        public void onError() {
+                        public void onError(String error) {
                             TTSUtil.speak("error");
-                            ToastUtil.show(StockInAddActivity.this,"box delete error");
+                            ToastUtil.show(StockInAddActivity.this,"box delete error:"+error);
                         }
                     });
                 });
@@ -995,9 +995,9 @@ public class StockInAddActivity extends BaseActivity {
             }
 
             @Override
-            public void onError() {
+            public void onError(String error) {
                 TTSUtil.speak("Error");
-                ToastUtil.show(StockInAddActivity.this,"box boxid error");
+                ToastUtil.show(StockInAddActivity.this,"box boxid error:"+error);
             }
         });
     }
@@ -1090,9 +1090,9 @@ public class StockInAddActivity extends BaseActivity {
             }
 
             @Override
-            public void onError() {
+            public void onError(String error) {
                 TTSUtil.speak("error");
-                ToastUtil.show(StockInAddActivity.this, "Terminal in error!");
+                ToastUtil.show(StockInAddActivity.this, "Terminal in error!:"+error);
                 et_terminal_in.setText("");
                 et_terminal_in.requestFocus();
             }

@@ -202,9 +202,9 @@ public class InventoryActivity extends BaseActivity {
             }
 
             @Override
-            public void onError() {
+            public void onError(String error) {
                 TTSUtil.speak("error");
-                ToastUtil.show(InventoryActivity.this,"list get error");
+                ToastUtil.show(InventoryActivity.this,"list get error"+error);
             }
         });
     }
@@ -233,9 +233,9 @@ public class InventoryActivity extends BaseActivity {
             }
 
             @Override
-            public void onError() {
+            public void onError(String error) {
                 TTSUtil.speak("error");
-                ToastUtil.show(InventoryActivity.this,"cycle out error");
+                ToastUtil.show(InventoryActivity.this,"cycle out error"+error);
             }
         });
     }
@@ -270,9 +270,9 @@ public class InventoryActivity extends BaseActivity {
             }
 
             @Override
-            public void onError() {
+            public void onError(String error) {
                 TTSUtil.speak("error");
-                ToastUtil.show(InventoryActivity.this,"list get error");
+                ToastUtil.show(InventoryActivity.this,"list get error:"+error);
             }
         });
     }
@@ -302,9 +302,9 @@ public class InventoryActivity extends BaseActivity {
             }
 
             @Override
-            public void onError() {
+            public void onError(String error) {
                 TTSUtil.speak("error");
-                ToastUtil.show(InventoryActivity.this,"cycle in error");
+                ToastUtil.show(InventoryActivity.this,"cycle in error:"+error);
             }
         });
     }

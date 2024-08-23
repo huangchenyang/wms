@@ -94,7 +94,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
             }
 
             @Override
-            public void onError() {
+            public void onError(String erro) {
                 TTSUtil.speak("Error");
             }
         });

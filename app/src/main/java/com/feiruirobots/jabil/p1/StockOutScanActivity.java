@@ -269,9 +269,9 @@ public class StockOutScanActivity extends BaseActivity {
             }
 
             @Override
-            public void onError() {
+            public void onError(String error) {
                 TTSUtil.speak("error");
-                ToastUtil.show(StockOutScanActivity.this,"retrieve box list error");
+                ToastUtil.show(StockOutScanActivity.this,"retrieve box list error:"+error);
 
             }
         });
@@ -318,9 +318,9 @@ public class StockOutScanActivity extends BaseActivity {
             }
 
             @Override
-            public void onError() {
+            public void onError(String error) {
                 TTSUtil.speak("error");
-                ToastUtil.show(StockOutScanActivity.this,"scan box error");
+                ToastUtil.show(StockOutScanActivity.this,"scan box error:"+error);
             }
         });
     }

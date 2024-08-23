@@ -9,6 +9,9 @@ import com.feiruirobots.jabil.p1.common.ToastUtil;
 import com.yanzhenjie.nohttp.rest.OnResponseListener;
 import com.yanzhenjie.nohttp.rest.Response;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import cn.hutool.core.util.StrUtil;
 
 public abstract class HttpResponse implements OnResponseListener {
@@ -29,7 +32,7 @@ public abstract class HttpResponse implements OnResponseListener {
 
     public abstract void onFail(JSONObject object);
 
-    public abstract void onError();
+    public abstract void onError(String errorStr);
 
     @Override
     public void onSucceed(int what, Response response) {
@@ -43,8 +46,15 @@ public abstract class HttpResponse implements OnResponseListener {
             }
             onFail(json);
         } catch (Exception ex) {
-            onError();
+            onError(getStackTraceAsString(ex));
         }
+    }
+
+    public static String getStackTraceAsString(Exception ex) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        ex.printStackTrace(pw);
+        return sw.toString();
     }
 
     /**

@@ -37,7 +37,7 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        tv_version.setText("Version 1.32.18");
+        tv_version.setText("Version 1.32.20");
         tv_version.setOnClickListener(v -> {
             Uri uri = Uri.parse("http://10.121.196.47:11180/jabil/pda/download");
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);

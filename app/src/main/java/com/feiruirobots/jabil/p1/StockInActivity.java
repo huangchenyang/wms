@@ -202,9 +202,9 @@ public class StockInActivity extends BaseActivity {
             }
 
             @Override
-            public void onError() {
+            public void onError(String error) {
                 TTSUtil.speak("error");
-                ToastUtil.show(StockInActivity.this,"list get error");
+                ToastUtil.show(StockInActivity.this,"list get error:"+error);
             }
         });
     }
@@ -306,9 +306,9 @@ public class StockInActivity extends BaseActivity {
             }
 
             @Override
-            public void onError() {
+            public void onError(String error) {
                 TTSUtil.speak("task get error");
-                ToastUtil.show(StockInActivity.this,"pallet info error");
+                ToastUtil.show(StockInActivity.this,"pallet info error:"+error);
             }
         });
     }

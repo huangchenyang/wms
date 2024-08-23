@@ -182,9 +182,9 @@ public class StockOutActivity extends BaseActivity {
             }
 
             @Override
-            public void onError() {
+            public void onError(String error) {
                 TTSUtil.speak("error");
-                ToastUtil.show(StockOutActivity.this,"retrieve list get error");
+                ToastUtil.show(StockOutActivity.this,"retrieve list get error:"+error);
             }
         });
     }
@@ -208,9 +208,9 @@ public class StockOutActivity extends BaseActivity {
             }
 
             @Override
-            public void onError() {
+            public void onError(String error) {
                 TTSUtil.speak("error");
-                ToastUtil.show(StockOutActivity.this,billId + " start error");
+                ToastUtil.show(StockOutActivity.this,billId + " start error:"+error);
                 et_perference.setText(null);
             }
         });
@@ -254,9 +254,9 @@ public class StockOutActivity extends BaseActivity {
             }
 
             @Override
-            public void onError() {
+            public void onError(String error) {
                 TTSUtil.speak("error");
-                ToastUtil.show(StockOutActivity.this,"retrieve box list error");
+                ToastUtil.show(StockOutActivity.this,"retrieve box list error:"+error);
                 et_perference.setText(null);
             }
         });
