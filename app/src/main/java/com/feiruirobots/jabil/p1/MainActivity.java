@@ -1,8 +1,6 @@
 package com.feiruirobots.jabil.p1;
 
 import android.app.AlertDialog;
-import android.app.DownloadManager;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -10,11 +8,20 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSONObject;
+import com.feiruirobots.jabil.p1.common.TTSUtil;
+import com.feiruirobots.jabil.p1.common.ToastUtil;
+import com.feiruirobots.jabil.p1.http.CallServer;
+import com.feiruirobots.jabil.p1.http.HttpResponse;
 import com.feiruirobots.jabil.p1.model.ACTION;
+import com.yanzhenjie.nohttp.RequestMethod;
+import com.yanzhenjie.nohttp.rest.StringRequest;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -31,13 +38,14 @@ public class MainActivity extends BaseActivity {
     TextView tv_version;
     private static final int REQUIRED_CLICK_COUNT = 5;
     private int clickCount = 0;
+    private static String TAG = "hcy--MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        tv_version.setText("Version 1.32.20");
+        tv_version.setText("Version 1.32.21");
         tv_version.setOnClickListener(v -> {
             Uri uri = Uri.parse("http://10.121.196.47:11180/jabil/pda/download");
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
@@ -48,6 +56,14 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onClick(View view) {
                 handleButtonClick();
+            }
+        });
+
+        Button buttonLogout = (Button)findViewById(R.id.logout_button);
+        buttonLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                logout();
             }
         });
     }
@@ -136,5 +152,41 @@ public class MainActivity extends BaseActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void logout() {
+        String url = App.getMethod("/pda_user/logout");
+        StringRequest request = new StringRequest(url, RequestMethod.POST);
+        CallServer.getInstance().add(0, request, new HttpResponse(MainActivity.this) {
+            @Override
+            public void onStart(int what) {
+
+            }
+
+            @Override
+            public void onOK(JSONObject json) {
+                Log.d(TAG,"onOK:"+json.toString());
+                startLogoutActivity();
+            }
+
+            @Override
+            public void onFail(JSONObject object) {
+                Log.d(TAG,"onFail:"+object.toString());
+                TTSUtil.speak("fail");
+                ToastUtil.show(MainActivity.this,"logout fail "+object.toString());
+            }
+
+            @Override
+            public void onError(String error) {
+                TTSUtil.speak("error");
+                ToastUtil.show(MainActivity.this,"logout error:"+error);
+            }
+        });
+    }
+
+    private void startLogoutActivity() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 }

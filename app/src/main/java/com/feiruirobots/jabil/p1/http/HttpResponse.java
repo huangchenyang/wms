@@ -1,9 +1,11 @@
 package com.feiruirobots.jabil.p1.http;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 import com.alibaba.fastjson.JSONObject;
+import com.feiruirobots.jabil.p1.LoginActivity;
 import com.feiruirobots.jabil.p1.common.TTSUtil;
 import com.feiruirobots.jabil.p1.common.ToastUtil;
 import com.yanzhenjie.nohttp.rest.OnResponseListener;
@@ -40,9 +42,13 @@ public abstract class HttpResponse implements OnResponseListener {
             Log.i("=======", response.get().toString());
             JSONObject json = JSONObject.parseObject(response.get().toString());
             String state = json.getString("state");
+            String code = json.getString("code");
             if (StrUtil.equals(state, "ok")) {
                 onOK(json);
                 return;
+            }
+            if(code!=null && code.equals("403")){  //跳转回登陆界面
+                startLogoutActivity();
             }
             onFail(json);
         } catch (Exception ex) {
@@ -77,5 +83,11 @@ public abstract class HttpResponse implements OnResponseListener {
     @Override
     public void onFinish(int what) {
 
+    }
+
+    private void startLogoutActivity() {
+        Intent intent = new Intent(mContext, LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        mContext.startActivity(intent);
     }
 }

@@ -1158,49 +1158,61 @@ public class StockInAddActivity extends BaseActivity {
 //                    return;
 //                }
 //            }
-            if (editText.getId() == et_box_id.getId()) {
-                if (StrUtil.equals(function, FUNCTION.FINISHED_GOODS.value)|| StrUtil.equals(function, FUNCTION.SEMI_FG.value)){
-                    if (StrUtil.startWithAny(str, "RA134", "RV19", "RAG1", "RAS1", "RA", "RA78", "RA95", "RA124", "RA112", "RA193", "RA140", "PA102", "RA104", "RA11", "RL19")) {
-                        if(!cb_batch_no.isChecked()) {
-                            RBoxIDConfirmDialog();
-                            return;
-                        }
-                    }
-                }
 
-                if (StrUtil.startWithAny(str, "PA134", "PV19", "PAG1", "PAS1", "PA", "PABD", "PA95", "PA124", "PA112", "PA193", "PA140", "PCT8", "PA104", "PFGT", "BL19")) {
-                    if(cb_batch_no.isChecked()){
+            if (editText.getId() == et_box_id.getId()) {
+                if(cb_batch_no.isChecked()){
+                    if (!StrUtil.startWithAny(str, "RA134", "RV19", "RAG1", "RAS1", "RA", "RA78", "RA95", "RA124", "RA112", "RA193", "RA140", "PA102", "RA104", "RA11", "RL19")
+                    && !StrUtil.startWithAny(str, "PA134", "PV19", "PAG1", "PAS1", "PA", "PABD", "PA95", "PA124", "PA112", "PA193", "PA140", "PCT8", "PA104", "PFGT", "BL19")) {
                         TTSUtil.speak("error");
                         ToastUtil.show(StockInAddActivity.this,"invalid box id,don't select batch");
                         et_box_id.setText(null);
                         et_box_id.requestFocus();
                         return;
                     }
-                }
+                }else{
+                    if (StrUtil.equals(function, FUNCTION.FINISHED_GOODS.value)|| StrUtil.equals(function, FUNCTION.SEMI_FG.value)){
+                        if (StrUtil.startWithAny(str, "RA134", "RV19", "RAG1", "RAS1", "RA", "RA78", "RA95", "RA124", "RA112", "RA193", "RA140", "PA102", "RA104", "RA11", "RL19")) {
+                            if(!cb_batch_no.isChecked()) {
+                                RBoxIDConfirmDialog();
+                                return;
+                            }
+                        }
+                    }
 
-                if (StrUtil.startWithAny(str, "RA134", "RV19", "RAG1", "RAS1", "RA", "RA78", "RA95", "RA124", "RA112", "RA193", "RA140", "PA102", "RA104", "RA11", "RL19")) {
-                    if(!cb_batch_no.isChecked()) {
+                    if (StrUtil.startWithAny(str, "PA134", "PV19", "PAG1", "PAS1", "PA", "PABD", "PA95", "PA124", "PA112", "PA193", "PA140", "PCT8", "PA104", "PFGT", "BL19")) {
+                        if(cb_batch_no.isChecked()){
+                            TTSUtil.speak("error");
+                            ToastUtil.show(StockInAddActivity.this,"invalid box id,don't select batch");
+                            et_box_id.setText(null);
+                            et_box_id.requestFocus();
+                            return;
+                        }
+                    }
+
+                    if (StrUtil.startWithAny(str, "RA134", "RV19", "RAG1", "RAS1", "RA", "RA78", "RA95", "RA124", "RA112", "RA193", "RA140", "PA102", "RA104", "RA11", "RL19")) {
+                        if(!cb_batch_no.isChecked()) {
+                            TTSUtil.speak("error");
+                            ToastUtil.show(StockInAddActivity.this, "invalid box id,need select batch");
+                            et_box_id.setText(null);
+                            et_box_id.requestFocus();
+                            return;
+                        }
+                    }
+
+                    if (!cb_batch_no.isChecked() && !StrUtil.startWithAny(str, "PA134", "PV19", "PAG1", "PAS1", "PA", "PABD", "PA95", "PA124", "PA112", "PA193", "PA140", "PCT8", "PA104", "PFGT", "BL19")) {
                         TTSUtil.speak("error");
-                        ToastUtil.show(StockInAddActivity.this, "invalid box id,need select batch");
-                        et_box_id.setText(null);
+                        ToastUtil.show(StockInAddActivity.this,"invalid box id");
+//                    et_box_id.setText(null);
                         et_box_id.requestFocus();
                         return;
                     }
-                }
-
-                if (!cb_batch_no.isChecked() && !StrUtil.startWithAny(str, "PA134", "PV19", "PAG1", "PAS1", "PA", "PABD", "PA95", "PA124", "PA112", "PA193", "PA140", "PCT8", "PA104", "PFGT", "BL19")) {
-                    TTSUtil.speak("error");
-                    ToastUtil.show(StockInAddActivity.this,"invalid box id");
+                    if (cb_batch_no.isChecked() && !StrUtil.startWithAny(str, "RA134", "RV19", "RAG1", "RAS1", "RA", "RA78", "RA95", "RA124", "RA112", "RA193", "RA140", "PA102", "RA104", "RA11", "RL19")) {
+                        TTSUtil.speak("error");
+                        ToastUtil.show(StockInAddActivity.this,"invalid box id");
 //                    et_box_id.setText(null);
-                    et_box_id.requestFocus();
-                    return;
-                }
-                if (cb_batch_no.isChecked() && !StrUtil.startWithAny(str, "RA134", "RV19", "RAG1", "RAS1", "RA", "RA78", "RA95", "RA124", "RA112", "RA193", "RA140", "PA102", "RA104", "RA11", "RL19")) {
-                    TTSUtil.speak("error");
-                    ToastUtil.show(StockInAddActivity.this,"invalid box id");
-//                    et_box_id.setText(null);
-                    et_box_id.requestFocus();
-                    return;
+                        et_box_id.requestFocus();
+                        return;
+                    }
                 }
             }
 

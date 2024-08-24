@@ -21,18 +21,24 @@
             android:textColor="@color/headerTextColor"
             android:textSize="14sp" />
 
-        <LinearLayout
-            android:id="@+id/ll_header_back"
+        <android.widget.Button
+            android:id="@+id/logout_button"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="25dp"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="@color/headerTextColor"
+            android:background="@android:color/transparent"
+            android:text="Logout"
+            >
 
 
-        </LinearLayout>
+        </android.widget.Button>
 
     </RelativeLayout>
 
