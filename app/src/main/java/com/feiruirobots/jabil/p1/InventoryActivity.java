@@ -351,7 +351,7 @@ public class InventoryActivity extends BaseActivity {
         public void afterTextChanged(Editable editable) {
             String str = editable.toString();
             if (str == null || str.equals("")|| (str.indexOf("\r") == -1 && str.indexOf("\n") == -1)) return;
-            editText.setText(str.replace("\r", "").replace("\n", ""));
+            editText.setText(str.replace("\r", "").replace("\n", "").trim());
 
             if (editText.getId() == et_cycle_id.getId()) {
                 if (StrUtil.equals(function, FUNCTION.CYCLE_OUT.value)) {

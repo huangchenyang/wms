@@ -244,7 +244,7 @@ public class StockInActivity extends BaseActivity {
         public void afterTextChanged(Editable editable) {
             String str = editable.toString();
             if (str.equals("") || str == null || (str.indexOf("\r") == -1 && str.indexOf("\n") == -1)) return;
-            String newStr = str.replace("\r", "").replace("\n", "");
+            String newStr = str.replace("\r", "").replace("\n", "").trim();
             editText.setText(newStr);
             if(StrUtil.equals(function, FUNCTION.RTV_RTC.value) || StrUtil.equals(function, FUNCTION.STAGING.value)){
 

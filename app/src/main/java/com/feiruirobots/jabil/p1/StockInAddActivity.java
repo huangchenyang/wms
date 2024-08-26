@@ -1125,7 +1125,7 @@ public class StockInAddActivity extends BaseActivity {
         public void afterTextChanged(Editable editable) {
             String str = editable.toString();
             if (str == null || (str.indexOf("\r") == -1 && str.indexOf("\n") == -1)) return;
-            editText.setText(str.replace("\r", "").replace("\n", ""));
+            editText.setText(str.replace("\r", "").replace("\n", "").trim());
             if (editText.getId() == et_qty.getId()) {
                 if (!str.startsWith("Q")) {
                     TTSUtil.speak("error");

@@ -284,7 +284,7 @@ public class StockOutActivity extends BaseActivity {
             String str = editable.toString();
             Log.d(TAG,"str:"+str);
             if (str.equals("") || str == null || (str.indexOf("\r") == -1 && str.indexOf("\n") == -1)) return;
-            editText.setText(str.replace("\r", "").replace("\n", ""));
+            editText.setText(str.replace("\r", "").replace("\n", "").trim());
             Log.d(TAG,"afterTextChanged:"+str);
 //            if(isRetrieveStart){
 //                startRetrieve(editText.getText().toString());
