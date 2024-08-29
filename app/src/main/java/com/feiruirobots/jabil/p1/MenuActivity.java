@@ -1,9 +1,12 @@
 package com.feiruirobots.jabil.p1;
 
+import static com.feiruirobots.jabil.p1.LoginActivity.userName;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.feiruirobots.jabil.p1.model.ACTION;
 import com.feiruirobots.jabil.p1.model.FUNCTION;
@@ -23,6 +26,8 @@ public class MenuActivity extends BaseActivity {
         Intent intent = this.getIntent();
         action = intent.getStringExtra("ACTION");
         initTitle(ACTION.of(action).msg);
+        TextView tv_username = findViewById(R.id.tv_username);
+        tv_username.setText(userName);
     }
 
     @OnClick({R.id.btn_finish_goods, R.id.btn_rtc, R.id.btn_raw_material, R.id.btn_staging, R.id.btn_simi_fg})

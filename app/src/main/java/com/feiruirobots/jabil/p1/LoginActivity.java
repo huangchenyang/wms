@@ -27,6 +27,7 @@ public class LoginActivity extends BaseActivity {
     private static final String PREFS_NAME = "MyPrefsFile";
     private static final String LAST_LOGIN_TIME_KEY = "lastLoginTime";
     private static final long SIX_HOURS_IN_MILLIS = 6 * 60 * 60 * 1000;
+    public static String userName = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,6 +116,7 @@ public class LoginActivity extends BaseActivity {
             public void onOK(JSONObject json) {
                 Log.d(TAG,"onOK:"+json.toString());
 //                saveLastLoginTime();
+                userName = json.getJSONObject("username").toString();
                 startLoginActivity();
             }
 

@@ -1,5 +1,7 @@
 package com.feiruirobots.jabil.p1;
 
+import static com.feiruirobots.jabil.p1.LoginActivity.userName;
+
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
@@ -45,7 +47,7 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        tv_version.setText("Version 1.32.23");
+        tv_version.setText("Version 1.32.24");
         tv_version.setOnClickListener(v -> {
             Uri uri = Uri.parse("http://10.121.196.47:11180/jabil/pda/download");
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
@@ -66,6 +68,8 @@ public class MainActivity extends BaseActivity {
                 logout();
             }
         });
+        TextView tv_username = findViewById(R.id.tv_username);
+        tv_username.setText(userName);
     }
 
     @OnClick({R.id.btn_in_stock, R.id.btn_retrive, R.id.btn_inventory})
