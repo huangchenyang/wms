@@ -1250,6 +1250,9 @@ public class StockInAddActivity extends BaseActivity {
         et_esr.setText(null);
         et_carton_count.setText(null);
         et_rma.setText(null);
+        if(cb_batch_no.isChecked()){
+            et_batch_no.setText(null);
+        }
         if (StrUtil.equals(function, FUNCTION.FINISHED_GOODS.value)) {
             et_part_no.requestFocus();
         }

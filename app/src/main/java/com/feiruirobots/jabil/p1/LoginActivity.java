@@ -116,7 +116,7 @@ public class LoginActivity extends BaseActivity {
             public void onOK(JSONObject json) {
                 Log.d(TAG,"onOK:"+json.toString());
 //                saveLastLoginTime();
-                userName = json.getJSONObject("username").toString();
+                userName = json.getString("username");
                 startLoginActivity();
             }
 
