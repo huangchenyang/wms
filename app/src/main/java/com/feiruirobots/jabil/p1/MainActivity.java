@@ -40,6 +40,7 @@ public class MainActivity extends BaseActivity {
     TextView tv_version;
     private static final int REQUIRED_CLICK_COUNT = 5;
     private int clickCount = 0;
+    public static String gVersion = "Version 1.32.27";
     private static String TAG = "hcy--MainActivity";
 
     @Override
@@ -47,7 +48,7 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        tv_version.setText("Version 1.32.26");
+        tv_version.setText(gVersion);
         tv_version.setOnClickListener(v -> {
             Uri uri = Uri.parse("http://10.121.196.47:11180/jabil/pda/download");
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);

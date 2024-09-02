@@ -18,10 +18,10 @@ public class App extends Application {
     public static String getMethod(String method) {
 //        return StrUtil.format("http://10.121.196.47:11180/jabil/pda{}",method);
 //        return StrUtil.format("http://192.168.43.241/jabil/pda{}", method);
-//        return StrUtil.format("http://8.134.165.24:11180/jabil/pda{}",method);           //自己的
+//        return StrUtil.format("http://8.134.165.24:11180/jabil/pda{}",method);    //自己的
         return StrUtil.format("http://10.121.196.47:11180/jabil/pda{}",method);   //现场
 //        return StrUtil.format("http://192.168.17.172:11180/jabil/pda{}",method);
-//        return StrUtil.format("http://8.138.36.33:11180/jabil/pda{}",method);
+//        return StrUtil.format("http://8.138.36.33:11180/jabil/pda{}",method);  //新测试环境
     }
 
     public static String getCodeBarUrl() {

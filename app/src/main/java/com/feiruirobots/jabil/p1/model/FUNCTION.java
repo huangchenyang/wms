@@ -9,7 +9,9 @@ public enum FUNCTION {
     RTV_RTC("RTV_RTC", "RT"),
     STAGING("STAGING", "STG"),
     CYCLE_IN("CYCLE_IN", "Cycle In"),
-    CYCLE_OUT("CYCLE_OUT", "Cycle Out");
+    CYCLE_OUT("CYCLE_OUT", "Cycle Out"),
+    CONSOLIDATION_OUT("CONSOLIDATION_OUT", "Consolidation Out"),
+    CONSOLIDATION_IN("CONSOLIDATION_IN", "Consolidation In");
     public String msg;
     public String value;
 

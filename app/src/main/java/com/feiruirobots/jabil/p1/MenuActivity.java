@@ -1,6 +1,7 @@
 package com.feiruirobots.jabil.p1;
 
 import static com.feiruirobots.jabil.p1.LoginActivity.userName;
+import static com.feiruirobots.jabil.p1.MainActivity.gVersion;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -28,6 +29,8 @@ public class MenuActivity extends BaseActivity {
         initTitle(ACTION.of(action).msg);
         TextView tv_username = findViewById(R.id.tv_username);
         tv_username.setText(userName);
+        TextView tv_version = findViewById(R.id.tv_version);
+        tv_version.setText(gVersion);
     }
 
     @OnClick({R.id.btn_finish_goods, R.id.btn_rtc, R.id.btn_raw_material, R.id.btn_staging, R.id.btn_simi_fg})

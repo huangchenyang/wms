@@ -61,6 +61,11 @@
             android:exported="false"
             android:windowSoftInputMode="adjustUnspecified|stateHidden" />
         <activity
+            android:name=".ConsolidationActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:exported="false"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden" />
+        <activity
             android:name=".LoginActivity"
             android:configChanges="orientation|keyboardHidden"
             android:exported="true"
