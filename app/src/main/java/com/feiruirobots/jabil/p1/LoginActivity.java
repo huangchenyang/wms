@@ -28,6 +28,7 @@ public class LoginActivity extends BaseActivity {
     private static final String LAST_LOGIN_TIME_KEY = "lastLoginTime";
     private static final long SIX_HOURS_IN_MILLIS = 6 * 60 * 60 * 1000;
     public static String userName = "";
+    public static String role = "Administrator";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,6 +118,7 @@ public class LoginActivity extends BaseActivity {
                 Log.d(TAG,"onOK:"+json.toString());
 //                saveLastLoginTime();
                 userName = json.getString("username");
+                role = json.getString("role");
                 startLoginActivity();
             }
 

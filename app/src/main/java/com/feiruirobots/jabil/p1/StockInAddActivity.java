@@ -1,5 +1,6 @@
 package com.feiruirobots.jabil.p1;
 
+import static com.feiruirobots.jabil.p1.LoginActivity.role;
 import static com.feiruirobots.jabil.p1.StockInActivity.existCartonList;
 import static com.feiruirobots.jabil.p1.StockInActivity.existPallet;
 
@@ -24,6 +25,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -168,6 +170,15 @@ public class StockInAddActivity extends BaseActivity {
         sp_reason = findViewById(R.id.sp_reason);
         et_planned_ship_date = findViewById(R.id.et_planned_ship_date);
         et_terminal.addTextChangedListener(new JumpTextWatcher(et_terminal, btn_apply_bin));
+        if(role.equals("Administrator")){
+            btn_cancle_new_pallet.setVisibility(View.VISIBLE);
+        }else{
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) btn_apply_bin.getLayoutParams();
+            params.removeRule(RelativeLayout.LEFT_OF);
+            params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
+            btn_apply_bin.setLayoutParams(params);
+            btn_cancle_new_pallet.setVisibility(View.GONE);
+        }
         if (StrUtil.equals(function, FUNCTION.FINISHED_GOODS.value)) {
             cb_hub = findViewById(R.id.cb_hub);
             sp_work_cell.setVisibility(View.VISIBLE);
