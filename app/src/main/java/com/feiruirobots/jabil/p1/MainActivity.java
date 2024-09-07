@@ -40,7 +40,7 @@ public class MainActivity extends BaseActivity {
     TextView tv_version;
     private static final int REQUIRED_CLICK_COUNT = 5;
     private int clickCount = 0;
-    public static String gVersion = "Version 1.32.29";
+    public static String gVersion = "Version 1.32.30";
     private static String TAG = "hcy--MainActivity";
 
     @Override
